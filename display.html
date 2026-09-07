@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>شاشة متابعة حالة السيارات والورشة (مباشر)</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    :root { --primary: #0f172a; --bg: #0f172a; --card: #1e293b; --text: #f8fafc; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, sans-serif; }
+    body { background-color: #0f172a; color: #f8fafc; padding: 20px; }
+
+    .header { display: flex; justify-content: space-between; align-items: center; background: #1e293b; padding: 20px; border-radius: 12px; margin-bottom: 20px; border-bottom: 3px solid #2563eb; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
+
+    .card { background: #1e293b; border-radius: 12px; padding: 20px; position: relative; box-shadow: 0 4px 10px rgba(0,0,0,0.3); border: 1px solid #334155; }
+    .car-no { background: #2563eb; color: white; padding: 4px 12px; border-radius: 20px; font-weight: bold; font-size: 0.9rem; }
+    
+    .status-tag { display: inline-block; padding: 6px 12px; border-radius: 6px; font-weight: bold; margin-top: 10px; font-size: 0.85rem; }
+    .st-waiting { background: #d97706; color: white; }
+    .st-working { background: #2563eb; color: white; }
+    .st-testing { background: #8b5cf6; color: white; }
+    .st-parts { background: #ef4444; color: white; }
+    .st-done { background: #059669; color: white; }
+
+    .payment-tag { font-weight: bold; font-size: 0.85rem; margin-top: 8px; }
+    .paid { color: #34d399; }
+    .unpaid { color: #f87171; }
+    .deferred { color: #fbbf24; }
+
+    .btn-cam { background: #334155; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 6px; width: 100%; justify-content: center; margin-top: 12px; }
+    .btn-edit { background: none; border: none; color: #94a3b8; cursor: pointer; position: absolute; top: 15px; left: 15px; }
+  </style>
+
+  <!-- SDKs الخاصة بـ Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+
+  <div class="header">
+    <h2><i class="fa-solid fa-desktop text-blue"></i> شاشة متابعة حركة السيارات بالورشة (مباشر)</h2>
+    <span style="color: #94a3b8;" id="clock"></span>
+  </div>
+
+  <div class="grid" id="displayGrid"></div>
+
+  <!-- نافذة الكاميرا -->
+  <div id="camModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); justify-content:center; align-items:center; z-index:999;">
+    <div style="background:#1e293b; padding:20px; border-radius:12px; text-align:center; max-width:600px; width:90%;">
+      <h3><i class="fa-solid fa-video"></i> البث المباشر لفحص وصيانة السيارة</h3>
+      <div style="background:#000; height:300px; border-radius:8px; margin:15px 0; display:flex; justify-content:center; align-items:center; color:#64748b;">
+        <i class="fa-solid fa-camera-rotate fa-3x"></i>
+        <p style="margin-top:10px;">(جاري الاتصال بكاميرات الفحص...)</p>
+      </div>
+      <button onclick="document.getElementById('camModal').style.display='none'" style="padding:8px 20px; background:#ef4444; color:white; border:none; border-radius:6px; cursor:pointer;">إغلاق</button>
+    </div>
+  </div>
+
+  <script>
+    // إعدادات الفايربيس الخاصة بمشروعك
+    const firebaseConfig = {
+      apiKey: "AIzaSyAXcNnF3y6QYc9Zq19630SE1NuFbdeNloM",
+      authDomain: "auto-non.firebaseapp.com",
+      projectId: "auto-non",
+      storageBucket: "auto-non.firebasestorage.app",
+      messagingSenderId: "480852907486",
+      appId: "1:480852907486:web:b931d45fa2a9d6197c794f",
+      measurementId: "G-94YDPEKLJJ"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    function updateClock() {
+      document.getElementById('clock').textContent = new Date().toLocaleTimeString('ar-EG');
+    }
+    setInterval(updateClock, 1000);
+
+    // الاستماع السحابي التفاعلي اللحظي
+    db.collection('cars').orderBy('createdAt', 'asc').onSnapshot((snapshot) => {
+      const container = document.getElementById('displayGrid');
+      container.innerHTML = '';
+
+      if(snapshot.empty) {
+        container.innerHTML = `<p style="grid-column:1/-1; text-align:center; color:#64748b; padding:50px;">لا توجد سيارات بالورشة حالياً.</p>`;
+        return;
+      }
+
+      snapshot.forEach((doc) => {
+        const car = doc.data();
+
+        let statusClass = 'st-waiting';
+        if (car.status === 'جاري العمل') statusClass = 'st-working';
+        else if (car.status === 'تحت الاختبار بعد الفحص') statusClass = 'st-testing';
+        else if (car.status === 'بانتظار قطع الغيار') statusClass = 'st-parts';
+        else if (car.status === 'تم الانتهاء') statusClass = 'st-done';
+
+        let payText = car.payment === 'paid' ? '<span class="paid"><i class="fa-solid fa-circle-check"></i> الحساب: تم الدفع</span>' :
+                      car.payment === 'deferred' ? '<span class="deferred"><i class="fa-solid fa-clock"></i> الحساب: آجل (على كشف الحساب)</span>' :
+                      '<span class="unpaid"><i class="fa-solid fa-circle-xmark"></i> الحساب: لم يدفع بعد</span>';
+
+        container.innerHTML += `
+          <div class="card">
+            <button class="btn-edit" title="تعديل الحالة سحابياً" onclick="editByAuth('${car.serial}', '${car.status}')"><i class="fa-solid fa-pen-to-square"></i></button>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+              <span class="car-no">دور: #${car.queueNo}</span>
+              <small style="color:#94a3b8">${car.serial}</small>
+            </div>
+            <h3 style="color:#f8fafc; font-size:1.1rem;">العميل: ${car.name}</h3>
+            <p style="color:#60a5fa; font-size:0.9rem; font-weight:bold; margin-top:4px;">${car.brand || ''} ${car.model || ''} - لون ${car.color || 'غير محدد'}</p>
+            <p style="color:#94a3b8; font-size:0.85rem; margin-top:2px;">اللوحة: ${car.plate} (${car.gov})</p>
+            <p style="color:#cbd5e1; font-size:0.85rem; margin-top:6px;">القسم: ${car.dept}</p>
+
+            <div class="status-tag ${statusClass}">${car.status}</div>
+
+            <div class="payment-tag">${payText}</div>
+
+            <button class="btn-cam" onclick="openCam('${car.serial}')">
+              <i class="fa-solid fa-camera"></i> عرض السيارة بالفحص
+            </button>
+          </div>
+        `;
+      });
+    });
+
+    function openCam(serial) {
+      document.getElementById('camModal').style.display = 'flex';
+    }
+
+    function editByAuth(serial, currentStatus) {
+      const pwd = prompt('أدخل كلمة مرور الموظف لتعديل الحالة:');
+      if (pwd === "1234") {
+        const newStatus = prompt('أدخل الحالة الجديدة (قائمة الانتظار / جاري العمل / تحت الاختبار بعد الفحص / بانتظار قطع الغيار / تم الانتهاء):', currentStatus);
+        if (newStatus) {
+          db.collection('cars').doc(serial).update({ status: newStatus });
+        }
+      } else if(pwd !== null) {
+        alert('كلمة المرور غير صحيحة!');
+      }
+    }
+
+    window.onload = function() {
+      updateClock();
+    };
+  </script>
+</body>
+</html>
