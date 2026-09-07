@@ -1,1 +1,634 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>مركز أوتو نون NON - قسم التشخيص والقطع الذكي</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <script src="https://unpkg.com/html5-qrcode"></script>
 
+  <style>
+    :root {
+      --primary: #f97316;
+      --primary-hover: #ea580c;
+      --accent: #1e293b;
+      --bg: #fff7ed;
+      --card-bg: #ffffff;
+      --text: #1e293b;
+      --border: #fed7aa;
+      --table-header: #ffedd5;
+      --btn-text: #ffffff;
+      --success: #10b981;
+      --danger: #ef4444;
+    }
+
+    body.dark-mode {
+      --primary: #f97316;
+      --primary-hover: #fb923c;
+      --accent: #f8fafc;
+      --bg: #0c0a09;
+      --card-bg: #1c1917;
+      --text: #f3f4f6;
+      --border: #44403c;
+      --table-header: #292524;
+      --btn-text: #ffffff;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; transition: background-color 0.2s, color 0.2s; }
+    body { background-color: var(--bg); color: var(--text); padding: 12px; }
+
+    .header {
+      background: linear-gradient(135deg, #f97316 0%, #c2410c 100%);
+      color: white; padding: 14px 20px; border-radius: 12px;
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;
+      box-shadow: 0 4px 12px rgba(249, 115, 22, 0.25);
+    }
+    .header-brand { display: flex; align-items: center; gap: 12px; }
+    .header-title h2 { font-size: 1.2rem; font-weight: bold; }
+    .header-title small { font-size: 0.78rem; opacity: 0.9; }
+    .header-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+
+    .btn {
+      background: var(--primary); color: var(--btn-text); border: none; padding: 10px 14px; border-radius: 8px;
+      font-weight: bold; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+      text-decoration: none; font-size: 0.85rem; transition: 0.2s;
+    }
+    .btn:hover { background: var(--primary-hover); }
+    .btn-block { width: 100%; }
+    .btn-success { background: var(--success); }
+    .btn-danger { background: var(--danger); }
+    .btn-outline { background: transparent; border: 1.5px solid var(--primary); color: var(--primary); }
+    body.dark-mode .btn-outline { color: #fb923c; border-color: #fb923c; }
+
+    .container { display: grid; grid-template-columns: 500px 1fr; gap: 20px; }
+    @media (max-width: 1024px) { .container { grid-template-columns: 1fr; } }
+
+    .card { background: var(--card-bg); padding: 18px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 1px solid var(--border); margin-bottom: 15px; }
+    .card h3 { margin-bottom: 12px; color: var(--primary); display: flex; justify-content: space-between; align-items: center; font-size: 1rem; border-bottom: 2px solid var(--border); padding-bottom: 8px; }
+
+    .form-group { margin-bottom: 12px; }
+    .form-group label { display: block; font-size: 0.82rem; font-weight: bold; margin-bottom: 5px; color: var(--text); }
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%; padding: 10px; border: 1.5px solid var(--border); background-color: var(--card-bg); color: var(--text); border-radius: 8px; font-size: 0.9rem; outline: none;
+    }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--primary); }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+
+    .scan-box {
+      background: #fff3ed; border: 2px dashed var(--primary); padding: 12px; border-radius: 10px; margin-bottom: 15px; text-align: center;
+    }
+    body.dark-mode .scan-box { background: #291e1a; }
+
+    /* شبكة تصوير الجهات الأربع */
+    .inspection-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 8px; }
+    .photo-card { border: 1.5px dashed var(--border); border-radius: 8px; padding: 10px; text-align: center; background: var(--table-header); }
+    .photo-card img { width: 100%; height: 80px; object-fit: cover; border-radius: 6px; margin-top: 6px; display: none; }
+
+    .parts-list { background: var(--table-header); border-radius: 8px; padding: 10px; margin-top: 10px; }
+    .part-item { padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
+    .part-item:last-child { border-bottom: none; }
+
+    .table-responsive { width: 100%; overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; margin-top: 5px; min-width: 650px; }
+    th, td { padding: 9px 10px; text-align: right; border-bottom: 1px solid var(--border); font-size: 0.82rem; color: var(--text); }
+    th { background: var(--table-header); font-weight: bold; color: var(--primary); }
+
+    .badge-turn { background: var(--primary); color: white; padding: 3px 8px; border-radius: 6px; font-weight: bold; font-size: 0.8rem; }
+    .badge-status { background: #ffedd5; color: #c2410c; padding: 4px 8px; border-radius: 6px; font-weight: bold; font-size: 0.75rem; }
+
+    .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; justify-content: center; align-items: center; z-index: 1000; padding: 15px; }
+    .modal-content { background: var(--card-bg); color: var(--text); padding: 20px; border-radius: 12px; width: 100%; max-width: 450px; text-align: center; border: 1px solid var(--border); position: relative; }
+    #scannerRegion { width: 100%; min-height: 250px; background: #000; border-radius: 8px; overflow: hidden; margin-top: 10px; }
+  </style>
+
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+
+  <!-- كاميرا الباركود -->
+  <div id="scannerModal" class="modal" style="display:none;">
+    <div class="modal-content">
+      <h3 style="color:var(--primary);"><i class="fa-solid fa-camera"></i> مسح باركود السيريال</h3>
+      <p style="font-size:0.8rem; opacity:0.8; margin:6px 0;">وجه الكاميرا نحو الباركود مباشرة</p>
+      <div id="scannerRegion"></div>
+      <button onclick="stopCameraScanner()" class="btn btn-danger btn-block" style="margin-top:12px;"><i class="fa-solid fa-xmark"></i> إغلاق</button>
+    </div>
+  </div>
+
+  <!-- الهيدر -->
+  <div class="header">
+    <div class="header-brand">
+      <i class="fa-solid fa-microchip fa-2x"></i>
+      <div class="header-title">
+        <h2>قسم التشخيص وقطع الغيار (NON)</h2>
+        <small>فحص الأعطال - التذكر الذكي للصيانة - المعاينة بالصور</small>
+      </div>
+    </div>
+    <div class="header-actions">
+      <a href="index.html" class="btn btn-outline" style="background:#fff; color:#f97316;"><i class="fa-solid fa-id-card"></i> الاستقبال</a>
+      <button onclick="toggleDarkMode()" class="btn btn-outline" style="background:#fff; color:#f97316;"><i id="themeIcon" class="fa-solid fa-moon"></i></button>
+    </div>
+  </div>
+
+  <div class="container">
+    <!-- نموذج التشخيص -->
+    <div class="card">
+      <h3>
+        <span><i class="fa-solid fa-stethoscope"></i> فحص وتشخيص السيارة</span>
+        <button onclick="clearDiagnosisForm()" class="btn btn-outline" style="padding:2px 8px; font-size:0.75rem;"><i class="fa-solid fa-eraser"></i> تفريغ</button>
+      </h3>
+
+      <!-- مسح السيريال -->
+      <div class="scan-box">
+        <label style="font-weight:bold; font-size:0.85rem; color:var(--primary); display:block; margin-bottom:6px;">
+          <i class="fa-solid fa-barcode"></i> أدخل أو امسح السيريال للتفعيل:
+        </label>
+        <div style="display:flex; gap:6px;">
+          <input type="text" id="serialInput" placeholder="اكتب أو امسح السيريال..." autofocus oninput="autoSearchBySerial()">
+          <button type="button" onclick="startCameraScanner()" class="btn"><i class="fa-solid fa-camera"></i></button>
+        </div>
+      </div>
+
+      <form id="diagnosisForm">
+        <div class="form-row-3">
+          <div class="form-group">
+            <label style="color:var(--primary); font-weight:bold;">رقم الدور:</label>
+            <input type="text" id="diagTurnNo" readonly style="background:#fff3ed; font-weight:bold; color:var(--primary); text-align:center;">
+          </div>
+          <div class="form-group" style="grid-column: span 2;">
+            <label>اسم العميل:</label>
+            <input type="text" id="diagClientName" readonly style="background:#f1f5f9;">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>رقم الواتساب:</label>
+            <input type="text" id="diagClientPhone" readonly style="background:#f1f5f9;">
+          </div>
+          <div class="form-group">
+            <label>بيانات السيارة واللون:</label>
+            <input type="text" id="diagCarInfo" readonly style="background:#f1f5f9;">
+          </div>
+        </div>
+
+        <!-- بند تصوير السيارة من 4 جهات قبل الاستلام -->
+        <div class="form-group" style="background:#f8fafc; padding:10px; border-radius:8px; border:1px solid var(--border);">
+          <label style="color:var(--primary); font-weight:bold;"><i class="fa-solid fa-camera-retro"></i> مراجعة حالة السيارة قبل الاستلام (تصوير 4 جهات):</label>
+          <div class="inspection-grid">
+            <div class="photo-card">
+              <span style="font-size:0.75rem;">الجهة الأمامية</span>
+              <input type="file" id="imgFront" accept="image/*" capture="environment" style="display:none;" onchange="previewImage(this, 'previewFront')">
+              <button type="button" onclick="document.getElementById('imgFront').click()" class="btn btn-outline btn-block" style="padding:4px; font-size:0.75rem; margin-top:4px;"><i class="fa-solid fa-camera"></i> تصوير</button>
+              <img id="previewFront">
+            </div>
+            <div class="photo-card">
+              <span style="font-size:0.75rem;">الجهة الخلفية</span>
+              <input type="file" id="imgBack" accept="image/*" capture="environment" style="display:none;" onchange="previewImage(this, 'previewBack')">
+              <button type="button" onclick="document.getElementById('imgBack').click()" class="btn btn-outline btn-block" style="padding:4px; font-size:0.75rem; margin-top:4px;"><i class="fa-solid fa-camera"></i> تصوير</button>
+              <img id="previewBack">
+            </div>
+            <div class="photo-card">
+              <span style="font-size:0.75rem;">الجانب الأيمن</span>
+              <input type="file" id="imgRight" accept="image/*" capture="environment" style="display:none;" onchange="previewImage(this, 'previewRight')">
+              <button type="button" onclick="document.getElementById('imgRight').click()" class="btn btn-outline btn-block" style="padding:4px; font-size:0.75rem; margin-top:4px;"><i class="fa-solid fa-camera"></i> تصوير</button>
+              <img id="previewRight">
+            </div>
+            <div class="photo-card">
+              <span style="font-size:0.75rem;">الجانب الأيسر</span>
+              <input type="file" id="imgLeft" accept="image/*" capture="environment" style="display:none;" onchange="previewImage(this, 'previewLeft')">
+              <button type="button" onclick="document.getElementById('imgLeft').click()" class="btn btn-outline btn-block" style="padding:4px; font-size:0.75rem; margin-top:4px;"><i class="fa-solid fa-camera"></i> تصوير</button>
+              <img id="previewLeft">
+            </div>
+          </div>
+        </div>
+
+        <!-- تفعيل السيريال والرابط -->
+        <div style="margin-bottom:12px;">
+          <button type="button" onclick="activateSerialAndGenerateLink()" class="btn btn-outline btn-block" style="border-style:dashed;">
+            <i class="fa-solid fa-link"></i> تفعيل السيريال وإصدار رابط سجل الصيانة
+          </button>
+          <input type="text" id="generatedClientLink" readonly placeholder="سيتولد رابط العميل المخصص هنا..." style="margin-top:6px; font-size:0.75rem; text-align:center; display:none;">
+        </div>
+
+        <!-- العطل -->
+        <div class="form-group">
+          <label style="color:var(--primary);"><i class="fa-solid fa-pen-to-square"></i> وصف العطل وتفاصيل التشخيص:</label>
+          <textarea id="diagIssue" rows="2" placeholder="تفاصيل العطل الفني..."></textarea>
+        </div>
+
+        <!-- اختيار قطع الغيار بآلية الصيانة الذكية -->
+        <div class="form-group" style="background:var(--table-header); padding:10px; border-radius:8px;">
+          <label><i class="fa-solid fa-boxes-stacked"></i> اختيارات قطع الغيار والمخزن:</label>
+          <select id="warehousePartsSelect" onchange="handlePartSelectionChange()">
+            <option value="">اختر قطعة الغيار المطلوبة...</option>
+          </select>
+
+          <!-- القائمة الفرعية الديناميكية عند اختيار الزيت/السير/التيل/الكاوتش -->
+          <div id="subCategoryBox" style="display:none; margin-top:8px;">
+            <label style="font-size:0.78rem; color:var(--primary);">حدد النوع الفرعي بدقة:</label>
+            <select id="subCategorySelect"></select>
+          </div>
+
+          <!-- خانة قراءة العداد الحالية -->
+          <div id="odometerBox" style="display:none; margin-top:8px;" class="form-row">
+            <div>
+              <label style="font-size:0.78rem;">قراءة العداد الحالية (كم):</label>
+              <input type="number" id="currentOdometer" placeholder="مثال: 120000" oninput="calculateNextMaintenanceKm()">
+            </div>
+            <div>
+              <label style="font-size:0.78rem;">الصيانة القادمة على عداد:</label>
+              <input type="text" id="nextMaintenanceKm" readonly style="background:#fff; font-weight:bold; color:var(--primary);">
+            </div>
+          </div>
+
+          <button type="button" onclick="addSelectedPart()" class="btn btn-block" style="margin-top:8px; font-size:0.8rem;"><i class="fa-solid fa-plus"></i> تأكيد إضافة القطعة للجدول</button>
+        </div>
+
+        <!-- الأصناف المختارة والتكلفة -->
+        <div class="parts-list">
+          <div style="font-weight:bold; font-size:0.82rem; margin-bottom:6px; color:var(--primary);">الأصناف والتكلفة المطلوبة:</div>
+          <div id="selectedPartsContainer">
+            <div style="text-align:center; color:#94a3b8; font-size:0.78rem;">لم يتم إضافة قطع غيار بعد.</div>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; padding-top:8px; border-top:2px solid var(--border); font-weight:bold;">
+            <span>مصنعية التركيب:</span>
+            <input type="number" id="laborCost" value="0" style="width:100px; padding:4px; text-align:center;" oninput="calculateTotalCost()">
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:6px; font-size:1.05rem; font-weight:bold; color:var(--primary);">
+            <span>التكلفة الإجمالية:</span>
+            <span id="totalCostDisplay">0 ج.م</span>
+          </div>
+        </div>
+
+        <!-- زر الإرسال وتنسيق الفاتورة -->
+        <button type="button" onclick="submitDiagnosisAndDispatch()" class="btn btn-block btn-success" style="margin-top:15px; font-size:1rem; padding:12px;">
+          <i class="fa-solid fa-paper-plane"></i> إرسال للفني والمخزن والحسابات والواتساب
+        </button>
+      </form>
+    </div>
+
+    <!-- جداول العرض والتذكير الشهري -->
+    <div>
+      <div class="card">
+        <h3>
+          <span><i class="fa-solid fa-clock-rotate-left"></i> السيارات المنتظرة للتشخيص</span>
+          <span id="pendingCount" class="badge-status">0 سيارة</span>
+        </h3>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>الدور</th>
+                <th>السيريال</th>
+                <th>اسم العميل</th>
+                <th>السيارة</th>
+                <th>الإجراء</th>
+              </tr>
+            </thead>
+            <tbody id="pendingCarsTable"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- السجل مع زر إرسال التذكير الشهري بالواتساب -->
+      <div class="card">
+        <h3>
+          <span><i class="fa-solid fa-file-invoice-dollar"></i> سجل التشخيص والتذكير الشهري</span>
+        </h3>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>التاريخ</th>
+                <th>العميل</th>
+                <th>التشخيص والقطع</th>
+                <th>التكلفة</th>
+                <th>الإجراء والتذكير الشهري</th>
+              </tr>
+            </thead>
+            <tbody id="historyCarsTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAXcNnF3y6QYc9Zq19630SE1NuFbdeNloM",
+      authDomain: "auto-non.firebaseapp.com",
+      projectId: "auto-non",
+      storageBucket: "auto-non.firebasestorage.app",
+      messagingSenderId: "480852907486",
+      appId: "1:480852907486:web:b931d45fa2a9d6197c794f"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    let currentSelectedCar = null;
+    let selectedPartsList = [];
+    let pendingCarsList = [];
+    let html5QrScanner = null;
+
+    // المخزن الممتد بخصائص الكيلومترات للزيوت والسيور والتيل والكاوتش
+    const mockWarehouse = [
+      { id: "p1", name: "زيت محرك", category: "oil", price: 1100, lifespanKm: 10000, subOptions: ["زيت محرك 10,000 كم", "زيت محرك 5,000 كم", "زيت فتيس أوتوماتيك", "زيت فرامل/باور"] },
+      { id: "p2", name: "سير مجموعات/كاتينة", category: "belt", price: 850, lifespanKm: 40000, subOptions: ["سير كاتينة دينامو", "سير تكييف", "طقم سير مجموعات كامل"] },
+      { id: "p3", name: "طقم تيل فرامل", category: "brake", price: 950, lifespanKm: 30000, subOptions: ["تيل فرامل أمامي", "تيل فرامل خلفي", "طنبورة فرامل"] },
+      { id: "p4", name: "إطار كاوتشok", category: "tire", price: 3200, lifespanKm: 50000, subOptions: ["كاوتش أمامي", "كاوتش خلفي", "طقم 4 إطارات"] },
+      { id: "p5", name: "فلتر هواء أصلي", category: "general", price: 250, lifespanKm: 0, subOptions: [] },
+      { id: "p6", name: "بطارية 70 أمبير", category: "general", price: 3400, lifespanKm: 0, subOptions: [] }
+    ];
+
+    window.onload = function() {
+      document.getElementById('serialInput').focus();
+      populatePartsSelect();
+      loadPendingCars();
+      loadHistoryCars();
+    };
+
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark-mode');
+    }
+
+    function populatePartsSelect() {
+      const select = document.getElementById('warehousePartsSelect');
+      select.innerHTML = '<option value="">اختر قطعة الغيار المطلوبة...</option>';
+      mockWarehouse.forEach(part => {
+        select.innerHTML += `<option value="${part.id}">${part.name} - (${part.price} ج.م)</option>`;
+      });
+    }
+
+    // التعامل الذكي مع اختيار بند الزيت أو السير أو التيل أو الكاوتش
+    function handlePartSelectionChange() {
+      const partId = document.getElementById('warehousePartsSelect').value;
+      const part = mockWarehouse.find(p => p.id === partId);
+
+      const subBox = document.getElementById('subCategoryBox');
+      const subSelect = document.getElementById('subCategorySelect');
+      const odoBox = document.getElementById('odometerBox');
+
+      if (part && part.category !== 'general') {
+        // فتح الخيارات الفرعية
+        subBox.style.display = 'block';
+        subSelect.innerHTML = '';
+        part.subOptions.forEach(opt => {
+          subSelect.innerHTML += `<option value="${opt}">${opt}</option>`;
+        });
+
+        // فتح خانة العداد
+        odoBox.style.display = 'grid';
+        calculateNextMaintenanceKm();
+      } else {
+        subBox.style.display = 'none';
+        odoBox.style.display = 'none';
+      }
+    }
+
+    // حساب قراءة العداد القادمة أوتوماتيكياً
+    function calculateNextMaintenanceKm() {
+      const partId = document.getElementById('warehousePartsSelect').value;
+      const part = mockWarehouse.find(p => p.id === partId);
+      const currentKm = parseFloat(document.getElementById('currentOdometer').value) || 0;
+
+      if (part && part.lifespanKm > 0 && currentKm > 0) {
+        const nextKm = currentKm + part.lifespanKm;
+        document.getElementById('nextMaintenanceKm').value = `${nextKm.toLocaleString()} كم (بعد ${part.lifespanKm.toLocaleString()} كم)`;
+      } else {
+        document.getElementById('nextMaintenanceKm').value = '---';
+      }
+    }
+
+    function addSelectedPart() {
+      const partId = document.getElementById('warehousePartsSelect').value;
+      const part = mockWarehouse.find(p => p.id === partId);
+      if (!part) return;
+
+      const subType = document.getElementById('subCategorySelect').value || part.name;
+      const currentKm = parseFloat(document.getElementById('currentOdometer').value) || 0;
+      const nextKm = currentKm > 0 && part.lifespanKm > 0 ? (currentKm + part.lifespanKm) : null;
+
+      selectedPartsList.push({
+        name: subType,
+        price: part.price,
+        currentKm: currentKm,
+        nextKm: nextKm
+      });
+
+      renderSelectedParts();
+      // إعادة ضبط
+      document.getElementById('warehousePartsSelect').value = '';
+      handlePartSelectionChange();
+    }
+
+    function removePart(index) {
+      selectedPartsList.splice(index, 1);
+      renderSelectedParts();
+    }
+
+    function renderSelectedParts() {
+      const container = document.getElementById('selectedPartsContainer');
+      if (selectedPartsList.length === 0) {
+        container.innerHTML = '<div style="text-align:center; color:#94a3b8; font-size:0.78rem;">لم يتم إضافة قطع غيار بعد.</div>';
+      } else {
+        container.innerHTML = '';
+        selectedPartsList.forEach((part, idx) => {
+          container.innerHTML += `
+            <div class="part-item">
+              <div style="display:flex; justify-content:space-between;">
+                <strong>${part.name}</strong>
+                <strong style="color:var(--primary);">${part.price} ج.م <button type="button" onclick="removePart(${idx})" style="background:none; border:none; color:var(--danger); cursor:pointer;"><i class="fa-solid fa-trash"></i></button></strong>
+              </div>
+              ${part.nextKm ? `<div style="font-size:0.75rem; color:#059669; margin-top:3px;">⏱️ الصيانة القادمة عند عداد: <strong>${part.nextKm.toLocaleString()} كم</strong></div>` : ''}
+            </div>
+          `;
+        });
+      }
+      calculateTotalCost();
+    }
+
+    function calculateTotalCost() {
+      const partsTotal = selectedPartsList.reduce((sum, p) => sum + p.price, 0);
+      const laborCost = parseFloat(document.getElementById('laborCost').value) || 0;
+      const grandTotal = partsTotal + laborCost;
+      document.getElementById('totalCostDisplay').textContent = `${grandTotal} ج.م`;
+      return grandTotal;
+    }
+
+    // معاينة صور السيارات الـ4
+    function previewImage(input, previewId) {
+      if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const img = document.getElementById(previewId);
+          img.src = e.target.result;
+          img.style.display = 'block';
+        }
+        reader.readAsDataURL(input.files[0]);
+      }
+    }
+
+    function autoSearchBySerial() {
+      const serial = document.getElementById('serialInput').value.trim().toLowerCase();
+      if (!serial) return;
+      const car = pendingCarsList.find(c => (c.serialNo || '').toLowerCase() === serial);
+      if (car) selectCarForDiagnosis(car);
+    }
+
+    function selectCarForDiagnosis(car) {
+      currentSelectedCar = car;
+      document.getElementById('serialInput').value = car.serialNo || '';
+      document.getElementById('diagTurnNo').value = car.turnNo || car.queueNo || '#1';
+      document.getElementById('diagClientName').value = car.name || '';
+      document.getElementById('diagClientPhone').value = car.phone || '';
+      document.getElementById('diagCarInfo').value = `${car.brand || ''} ${car.model || ''} (${car.color || 'عام'})`;
+      document.getElementById('diagIssue').value = car.issue || car.serviceDetails || '';
+    }
+
+    function activateSerialAndGenerateLink() {
+      if (!currentSelectedCar) return alert("اختر سيارة أولاً!");
+      const clientLink = `${window.location.origin}/car_history.html?serial=${encodeURIComponent(currentSelectedCar.serialNo)}`;
+      const linkInput = document.getElementById('generatedClientLink');
+      linkInput.style.display = 'block';
+      linkInput.value = clientLink;
+      alert(`تم تفعيل السيريال #${currentSelectedCar.serialNo} وتوليد رابط العميل!`);
+    }
+
+    // إرسال البيانات والواتساب
+    async function submitDiagnosisAndDispatch() {
+      if (!currentSelectedCar) return alert("اختر سيارة أولاً!");
+
+      const grandTotal = calculateTotalCost();
+      const updatedIssue = document.getElementById('diagIssue').value.trim();
+      const clientLink = document.getElementById('generatedClientLink').value || `${window.location.origin}/car_history.html?serial=${currentSelectedCar.serialNo}`;
+
+      const diagnosisRecord = {
+        carDocId: currentSelectedCar.docId,
+        serialNo: currentSelectedCar.serialNo,
+        turnNo: currentSelectedCar.turnNo || '#1',
+        clientName: currentSelectedCar.name,
+        clientPhone: currentSelectedCar.phone,
+        carInfo: document.getElementById('diagCarInfo').value,
+        issue: updatedIssue,
+        parts: selectedPartsList,
+        laborCost: parseFloat(document.getElementById('laborCost').value) || 0,
+        totalCost: grandTotal,
+        clientHistoryLink: clientLink,
+        timestamp: Date.now(),
+        date: new Date().toLocaleDateString('ar-EG')
+      };
+
+      try {
+        await db.collection('diagnoses').add(diagnosisRecord);
+        await db.collection('cars').doc(currentSelectedCar.docId).update({ diagnosed: true });
+
+        sendWhatsAppDiagnosis(diagnosisRecord);
+        alert("تم حفظ التشخيص وإرسال الرسالة بنجاح!");
+        clearDiagnosisForm();
+      } catch (err) { alert("خطأ بالحفظ: " + err.message); }
+    }
+
+    // رسالة الفاتورة والتشخيص
+    function sendWhatsAppDiagnosis(rec) {
+      let partsStr = rec.parts.map(p => `• ${p.name}: ${p.price} ج.م ${p.nextKm ? `(ميعاد التغيير القادم: ${p.nextKm.toLocaleString()} كم)` : ''}`).join('\n');
+      if (!partsStr) partsStr = "• لا يوجد قطع غيار إضافية";
+
+      const msg = `مرحباً أ/ ${rec.clientName}\nرقم الدور: (${rec.turnNo})\nتم فحص وتخيص سيارتكم (${rec.carInfo}) بمركز أوتو نون (NON).\n\n🛠️ العطل والتشخيص:\n${rec.issue}\n\n📦 الأصناف والصيانة المستهدفة:\n${partsStr}\n\n💰 إجمالي التكلفة: ${rec.totalCost} ج.م\n\n📸 تم فحص وتصوير حوادث/حالة السيارة من الـ 4 جهات وحفظها في السجل.\n\n🔗 رابط سجل الصيانة المباشر للعميل:\n${rec.clientHistoryLink}`;
+
+      window.open(`https://wa.me/2${rec.clientPhone}?text=${encodeURIComponent(msg)}`, '_blank');
+    }
+
+    // إرسال تذكير الصيانة الدوري الشهري عبر الواتساب
+    function sendMonthlyReminderWhatsApp(rec) {
+      let itemsReminder = rec.parts.filter(p => p.nextKm).map(p => `• ${p.name}: الميعاد القادم عند عداد (${p.nextKm.toLocaleString()} كم)`).join('\n');
+      if (!itemsReminder) itemsReminder = "• مراجعة دورية لمستوى الزيت والتيل والإطارات.";
+
+      const reminderMsg = `🚗 *تذكير دوري من مركز أوتو نون NON للصيانة*\n\nمرحباً أ/ ${rec.clientName}\nنود تذكيركم بميعاد مراجعة الصيانة الشهري والدورية لسيارتكم (${rec.carInfo}):\n\nتنبيهات المواعيد والعداد القادم:\n${itemsReminder}\n\nيرجى زيارتنا أو مراجعة مستوى الزيت وضغط الإطارات لضمان سلامتك على الطريق.\n\n🔗 رابط سجلك المباشر: ${rec.clientHistoryLink}`;
+
+      window.open(`https://wa.me/2${rec.clientPhone}?text=${encodeURIComponent(reminderMsg)}`, '_blank');
+    }
+
+    function loadPendingCars() {
+      db.collection('cars').onSnapshot(snapshot => {
+        pendingCarsList = [];
+        const tbody = document.getElementById('pendingCarsTable');
+        tbody.innerHTML = '';
+        snapshot.forEach(doc => {
+          const car = doc.data();
+          car.docId = doc.id;
+          if (!car.diagnosed) {
+            pendingCarsList.push(car);
+            tbody.innerHTML += `
+              <tr>
+                <td><span class="badge-turn">${car.turnNo || '#1'}</span></td>
+                <td><strong style="color:var(--primary);">${car.serialNo || 'بدون'}</strong></td>
+                <td><strong>${car.name}</strong></td>
+                <td>${car.brand || ''} ${car.model || ''}</td>
+                <td><button onclick='selectCarForDiagnosis(${JSON.stringify(car)})' class="btn" style="padding:3px 8px; font-size:0.75rem;"><i class="fa-solid fa-stethoscope"></i> تشخيص</button></td>
+              </tr>
+            `;
+          }
+        });
+        document.getElementById('pendingCount').textContent = `${pendingCarsList.length} سيارة`;
+      });
+    }
+
+    function loadHistoryCars() {
+      db.collection('diagnoses').orderBy('timestamp', 'desc').onSnapshot(snapshot => {
+        const tbody = document.getElementById('historyCarsTable');
+        tbody.innerHTML = '';
+        snapshot.forEach(doc => {
+          const rec = doc.data();
+          tbody.innerHTML += `
+            <tr>
+              <td><small>${rec.date}</small></td>
+              <td><strong>${rec.clientName}</strong><br><small>${rec.carInfo}</small></td>
+              <td>${rec.issue}<br><small style="color:var(--primary)">قطع/صيانة: ${rec.parts.length} أصناف</small></td>
+              <td><strong>${rec.totalCost} ج.م</strong></td>
+              <td>
+                <button onclick='sendMonthlyReminderWhatsApp(${JSON.stringify(rec)})' class="btn btn-outline" style="padding:3px 6px; font-size:0.72rem; border-color:#25d366; color:#25d366;" title="إرسال تذكير شهري واتساب"><i class="fa-brands fa-whatsapp"></i> تذكير شهري</button>
+              </td>
+            </tr>
+          `;
+        });
+      });
+    }
+
+    function clearDiagnosisForm() {
+      document.getElementById('diagnosisForm').reset();
+      currentSelectedCar = null;
+      selectedPartsList = [];
+      renderSelectedParts();
+      document.getElementById('previewFront').style.display = 'none';
+      document.getElementById('previewBack').style.display = 'none';
+      document.getElementById('previewRight').style.display = 'none';
+      document.getElementById('previewLeft').style.display = 'none';
+      document.getElementById('serialInput').focus();
+    }
+
+    function startCameraScanner() {
+      document.getElementById('scannerModal').style.display = 'flex';
+      if (!html5QrScanner) html5QrScanner = new Html5Qrcode("scannerRegion");
+
+      html5QrScanner.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: { width: 250, height: 180 } },
+        (text) => {
+          document.getElementById('serialInput').value = text;
+          stopCameraScanner();
+          autoSearchBySerial();
+        }, () => {}
+      ).catch(() => { alert("اسمح بالكاميرا."); stopCameraScanner(); });
+    }
+
+    function stopCameraScanner() {
+      if (html5QrScanner && html5QrScanner.isScanning) html5QrScanner.stop();
+      document.getElementById('scannerModal').style.display = 'none';
+    }
+  </script>
+</body>
+</html>
