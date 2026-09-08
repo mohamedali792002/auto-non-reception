@@ -846,36 +846,40 @@
     }
 
     function loadHistoryCars() {
-      db.collection('diagnoses').orderBy('timestamp', 'desc').onSnapshot(snapshot => {
-        const tbody = document.getElementById('historyCarsTable');
-        tbody.innerHTML = '';
+  db.collection('diagnoses').orderBy('timestamp', 'desc').onSnapshot(snapshot => {
+    const tbody = document.getElementById('historyCarsTable');
+    tbody.innerHTML = '';
 
-        const uniqueCarsMap = new Map();
+    const uniqueCarsMap = new Map();
 
-        snapshot.forEach(doc => {
-          const rec = doc.data();
-          const key = rec.serialNo || rec.plateNo || rec.clientName;
-          if (!uniqueCarsMap.has(key)) {
-            uniqueCarsMap.set(key, rec);
-          }
-        });
+    snapshot.forEach(doc => {
+      const rec = doc.data();
+      const key = rec.serialNo || rec.plateNo || rec.clientName;
+      if (!uniqueCarsMap.has(key)) {
+        uniqueCarsMap.set(key, rec);
+      }
+    });
 
-        uniqueCarsMap.forEach(rec => {
-          tbody.innerHTML += `
-            <tr>
-              <td><small>${rec.date}</small></td>
-              <td><strong>${rec.clientName}</strong><br><small style="color:#64748b;">${rec.carInfo}</small></td>
-              <td>${rec.issue}<br><small style="color:var(--primary)">قطع: ${rec.parts ? rec.parts.length : 0} أصناف</small></td>
-              <td><strong>${rec.totalCost} ج.م</strong></td>
-              <td>
-                <button onclick='sendMonthlyReminderWhatsApp(${JSON.stringify(rec)})' class="btn btn-outline" style="padding:2px 6px; font-size:0.72rem; border-color:#25d366; color:#25d366;"><i class="fa-brands fa-whatsapp"></i> تذكير</button>
-                <a href="${rec.clientHistoryLink}" target="_blank" class="btn btn-outline" style="padding:2px 6px; font-size:0.72rem;"><i class="fa-solid fa-arrow-up-right-from-square"></i> التقرير</a>
-              </td>
-            </tr>
-          `;
-        });
-      });
-    }
+    uniqueCarsMap.forEach(rec => {
+      // بناء الرابط الصحيح ديناميكياً لتفادي خطأ 404
+      const repoName = "auto-non-reception";
+      const correctHistoryLink = `https://${window.location.hostname}/${repoName}/car_history.html?serial=${encodeURIComponent(rec.serialNo || '')}`;
+
+      tbody.innerHTML += `
+        <tr>
+          <td><small>${rec.date}</small></td>
+          <td><strong>${rec.clientName}</strong><br><small style="color:#64748b;">${rec.carInfo}</small></td>
+          <td>${rec.issue}<br><small style="color:var(--primary)">قطع: ${rec.parts ? rec.parts.length : 0} أصناف</small></td>
+          <td><strong>${rec.totalCost} ج.م</strong></td>
+          <td>
+            <button onclick='sendMonthlyReminderWhatsApp(${JSON.stringify(rec)})' class="btn btn-outline" style="padding:2px 6px; font-size:0.72rem; border-color:#25d366; color:#25d366;"><i class="fa-brands fa-whatsapp"></i> تذكير</button>
+            <a href="${correctHistoryLink}" target="_blank" class="btn btn-outline" style="padding:2px 6px; font-size:0.72rem;"><i class="fa-solid fa-arrow-up-right-from-square"></i> التقرير</a>
+          </td>
+        </tr>
+      `;
+    });
+  });
+}
 
     function clearDiagnosisForm() {
       document.getElementById('diagnosisForm').reset();
