@@ -224,21 +224,45 @@
       }
     }
 
-    async function fetchHistoryBySerial(serial) {
+    async function fetchHistoryBySerial(serialInput) {
       try {
-        // جلب سجلات الفحص والتشخيص المرتبطة بالسيريال
-        const snap = await db.collection('diagnoses')
-                             .where('serialNo', '==', serial)
-                             .get();
+        const cleanSerial = serialInput.trim();
+        const numericSerial = !isNaN(cleanSerial) ? Number(cleanSerial) : cleanSerial;
+
+        // 1. البحث باستخدام السيريال كـ النص ورقم
+        let snap = await db.collection('diagnoses')
+                           .where('serialNo', '==', cleanSerial)
+                           .get();
+
+        if (snap.empty && typeof numericSerial === 'number') {
+          snap = await db.collection('diagnoses')
+                         .where('serialNo', '==', numericSerial)
+                         .get();
+        }
 
         let records = [];
         snap.forEach(doc => records.push(doc.data()));
 
-        // ترتيب المستندات من الأحدث للأقدم
-        records.sort((a, b) => b.timestamp - a.timestamp);
+        // 2. إذا لم يجد بالسيريال، ابحث برقم اللوحة
+        if (records.length === 0) {
+          let snapPlate = await db.collection('diagnoses')
+                                  .where('plateNo', '==', cleanSerial)
+                                  .get();
 
+          if (snapPlate.empty && typeof numericSerial === 'number') {
+            snapPlate = await db.collection('diagnoses')
+                                .where('plateNo', '==', numericSerial)
+                                .get();
+          }
+
+          snapPlate.forEach(doc => records.push(doc.data()));
+        }
+
+        // 3. عرض البيانات في حال وجود نتائج
         if (records.length > 0) {
-          renderCarDetails(records[0], serial);
+          records.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+          renderCarDetails(records[0], cleanSerial);
           renderReminders(records);
           renderTimeline(records);
 
@@ -246,25 +270,7 @@
           document.getElementById('historyCard').style.display = 'block';
           document.getElementById('emptyState').style.display = 'none';
         } else {
-          // محاولة البحث عن طريق رقم اللوحة إذا لم يوجد بالسيريال
-          const snapPlate = await db.collection('diagnoses')
-                                    .where('plateNo', '==', serial)
-                                    .get();
-          let plateRecords = [];
-          snapPlate.forEach(doc => plateRecords.push(doc.data()));
-
-          if (plateRecords.length > 0) {
-            plateRecords.sort((a, b) => b.timestamp - a.timestamp);
-            renderCarDetails(plateRecords[0], plateRecords[0].serialNo || serial);
-            renderReminders(plateRecords);
-            renderTimeline(plateRecords);
-
-            document.getElementById('carMainCard').style.display = 'block';
-            document.getElementById('historyCard').style.display = 'block';
-            document.getElementById('emptyState').style.display = 'none';
-          } else {
-            showEmptyState();
-          }
+          showEmptyState();
         }
       } catch (err) {
         console.error("خطأ جلب السجل:", err);
@@ -316,7 +322,7 @@
           remindersContainer.innerHTML += `
             <div class="reminder-item">
               <span><strong>• ${item.partName}</strong> (آخر تركيب: ${item.lastDate})</span>
-              <span style="font-weight:bold; color:#047857;">⏱️ الميعاد القادم: ${item.nextKm.toLocaleString()} كم</span>
+              <span style="font-weight:bold; color:#047857;">⏱️ الميعاد القادم: ${Number(item.nextKm).toLocaleString()} كم</span>
             </div>
           `;
         });
@@ -335,7 +341,7 @@
               <tr>
                 <td>${p.name}</td>
                 <td>${p.price} ج.م</td>
-                <td>${p.nextKm ? p.nextKm.toLocaleString() + ' كم' : 'عادي'}</td>
+                <td>${p.nextKm ? Number(p.nextKm).toLocaleString() + ' كم' : 'عادي'}</td>
               </tr>
             `;
           });
