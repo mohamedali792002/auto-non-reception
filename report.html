@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تقرير فحص السيارة - مركز أوتو نون (NON)</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background: #f8fafc; color: #0f172a; padding: 15px; direction: rtl; text-align: right; }
+    .container { max-width: 700px; margin: 0 auto; background: #ffffff; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); padding: 20px; border: 1px solid #e2e8f0; }
+    .header { text-align: center; border-bottom: 2px solid #ea580c; padding-bottom: 12px; margin-bottom: 15px; }
+    .header h2 { color: #ea580c; font-size: 1.3rem; }
+    .section { margin-bottom: 15px; padding: 12px; background: #f1f5f9; border-radius: 8px; }
+    .section title { font-weight: bold; color: #ea580c; margin-bottom: 6px; display: block; }
+    .image-grid { display: grid; grid-template-columns: 1fr; gap: 12px; margin-top: 10px; }
+    .image-card { display: flex; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; overflow: hidden; align-items: center; }
+    .image-card img { width: 120px; height: 100px; object-fit: cover; }
+    .image-desc { padding: 10px; font-size: 0.9rem; font-weight: bold; color: #1e293b; flex: 1; }
+    .btn { background: #ea580c; color: white; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 10px; font-size: 0.95rem; display: flex; align-items: center; justify-content: center; gap: 6px; }
+  </style>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+
+  <div class="container" id="reportContent">
+    <div class="header">
+      <h2><i class="fa-solid fa-car-tunnel"></i> مركز أوتو نون (NON) لصيانة السيارات</h2>
+      <p style="font-size: 0.85rem; color: #64748b;">تقرير الفحص الفني والتشخيص للعميل</p>
+    </div>
+
+    <div id="loadingText" style="text-align:center; padding:20px; font-weight:bold;">جاري تحميل بيانات التقرير...</div>
+    
+    <div id="reportDetails" style="display:none;">
+      <div class="section">
+        <b style="color:#ea580c;">بيانات العميل والسيارة:</b>
+        <p style="margin-top: 5px;"><b>الاسم:</b> <span id="clientName">---</span></p>
+        <p><b>السيارة:</b> <span id="carInfo">---</span> | <b>رقم اللوحة:</b> <span id="carPlate">---</span></p>
+      </div>
+
+      <div class="section">
+        <b style="color:#ea580c;">أكواد الأعطال (OBD):</b>
+        <p id="obdCodes" style="font-family:monospace; margin-top:5px; background:#fff; padding:6px; border-radius:4px; border:1px solid #cbd5e1;">---</p>
+      </div>
+
+      <div class="section">
+        <b style="color:#ea580c;">نتائج الفحص الفني:</b>
+        <p id="diagText" style="margin-top:5px; line-height:1.5;">---</p>
+      </div>
+
+      <div class="section">
+        <b style="color:#ea580c;"><i class="fa-solid fa-camera"></i> الصور والملاحظات المرئية:</b>
+        <div class="image-grid" id="imagesContainer"></div>
+      </div>
+
+      <button class="btn" style="background:#0284c7;" onclick="window.print()"><i class="fa-solid fa-file-arrow-down"></i> تحميل التقرير كملف PDF</button>
+    </div>
+  </div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAXcNnF3y6QYc9Zq19630SE1NuFbdeNloM",
+      authDomain: "auto-non.firebaseapp.com",
+      projectId: "auto-non",
+      storageBucket: "auto-non.firebasestorage.app",
+      messagingSenderId: "480852907486",
+      appId: "1:480852907486:web:b931d45fa2a9d6197c794f"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const carId = urlParams.get('id');
+
+    if (carId) {
+      db.collection('cars').doc(carId).get().then(doc => {
+        if (doc.exists) {
+          const car = doc.data();
+          document.getElementById('loadingText').style.display = 'none';
+          document.getElementById('reportDetails').style.display = 'block';
+
+          document.getElementById('clientName').textContent = car.name || 'غير محدد';
+          document.getElementById('carInfo').textContent = `${car.brand || ''} ${car.model || ''}`;
+          document.getElementById('carPlate').textContent = car.plate || 'غير محدد';
+          document.getElementById('obdCodes').textContent = car.obdCodes || 'لا توجد أكواد مسجلة';
+          document.getElementById('diagText').textContent = car.diagnosisDetails || 'لا توجد ملاحظات فنية.';
+
+          const imgContainer = document.getElementById('imagesContainer');
+          if (car.images && car.images.length > 0) {
+            imgContainer.innerHTML = car.images.map(img => `
+              <div class="image-card">
+                <img src="${img.url}">
+                <div class="image-desc">${img.description || 'بدون وصف'}</div>
+              </div>
+            `).join('');
+          } else {
+            imgContainer.innerHTML = '<p style="color:#64748b; font-size:0.85rem;">لا توجد صور مرفقة لهذا التقرير.</p>';
+          }
+        } else {
+          document.getElementById('loadingText').textContent = 'عذراً، تقرير السيارة غير موجود أو تم حذفه.';
+        }
+      }).catch(err => {
+        document.getElementById('loadingText').textContent = 'حدث خطأ أثناء تحميل التقرير.';
+      });
+    } else {
+      document.getElementById('loadingText').textContent = 'رابط التقرير غير صالح.';
+    }
+  </script>
+</body>
+</html>
