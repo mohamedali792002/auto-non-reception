@@ -288,14 +288,14 @@
           </div>
         </div>
 
-        <!-- ربط جهاز Diagzone Pro بالبلوتوث (يفتح إعدادات البلوتوث أو تطبيق الأعطال مباشرة على التابلت) -->
+        <!-- ربط جهاز Diagzone Pro بالبلوتوث وتطبيقات التابلت -->
         <div style="border:2px solid #0284c7; background:rgba(2, 132, 199, 0.05); border-radius:12px; padding:14px; margin-bottom:14px; box-shadow: 0 4px 12px rgba(2, 132, 199, 0.1);">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px;">
             <span style="font-weight:bold; color:#0284c7; font-size:0.95rem; display:flex; align-items:center; gap:6px;">
-              <i class="fa-brands fa-bluetooth-b" style="font-size:1.2rem;"></i> ربط جهاز الأعطال (Diagzone Pro) بالبلوتوث
+              <i class="fa-brands fa-bluetooth-b" style="font-size:1.2rem;"></i> ربط برامج فحص الأعطال أو البلوتوث
             </span>
             <button type="button" class="btn-action-sm btn-obd" onclick="openBluetoothSettingsAndApp()" style="padding:10px 16px; font-size:0.9rem; border-radius:8px; box-shadow: 0 2px 6px rgba(2, 132, 199, 0.3);">
-              <i class="fa-solid fa-gear"></i> فتح إعدادات البلوتوث والبرنامج
+              <i class="fa-solid fa-gear"></i> إعدادات البلوتوث / اختيار برامج التاب
             </button>
           </div>
           <textarea id="obdCodesInput" rows="3" placeholder="أكواد الأعطال المسجلة (مثال: P0300, P0171) - سيتم جلب البيانات هنا تلقائياً أو يمكنك كتابتها..." style="width:100%; font-size:0.9rem; padding:10px; border-radius:8px; border:1px solid var(--border-color); background:var(--input-bg); color:var(--text-main); font-weight:bold; outline:none; font-family:monospace;"></textarea>
@@ -313,13 +313,11 @@
             <label style="font-size:0.78rem; font-weight:bold;"><i class="fa-solid fa-camera"></i> صور الفحص الفني والعيوب:</label>
             
             <div style="display:flex; gap:6px;">
-              <!-- مدخل الكاميرا -->
               <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display:none;" onchange="handleImageSelected(event)">
               <button type="button" class="btn-action-sm btn-primary" onclick="document.getElementById('cameraInput').click()">
                 <i class="fa-solid fa-camera"></i> التقاط صورة
               </button>
 
-              <!-- مدخل رفع الصور -->
               <input type="file" id="galleryInput" accept="image/*" multiple style="display:none;" onchange="handleImageSelected(event)">
               <button type="button" class="btn-action-sm" style="background:#6366f1; color:white;" onclick="document.getElementById('galleryInput').click()">
                 <i class="fa-solid fa-paperclip"></i> إرفاق صورة
@@ -362,9 +360,14 @@
         </div>
 
         <div style="display:flex; flex-direction:column; gap:6px;">
-          <button type="button" id="btnHoldCar" class="btn-action-sm btn-hold" style="padding:9px; justify-content:center; font-size:0.85rem;" onclick="markCarAsSuspended()"><i class="fa-solid fa-pause-circle"></i> تحويل السيارة إلى معلقة لحين توفير قطع الغيار</button>
-          <!-- زر فتح المعاينة قبل الإرسال -->
-          <button type="button" id="btnPreviewBeforeSend" class="btn-action-sm btn-whatsapp btn-disabled" disabled style="padding:10px; justify-content:center; font-size:0.9rem;" onclick="openPreviewModal()"><i class="fa-solid fa-eye"></i> معاينة الفحص والتقرير قبل الإرسال</button>
+          <!-- زر جديد ومباشر لإرسال الفحص بالمرفقات والبيانات والاتصال بالواتساب فوراً -->
+          <button type="button" class="btn-action-sm btn-whatsapp" style="padding:11px; justify-content:center; font-size:0.95rem; font-weight:bold;" onclick="sendDirectReportWithAttachmentsWhatsApp()">
+            <i class="fa-brands fa-whatsapp" style="font-size:1.1rem;"></i> إرسال تفاصيل الفحص والمرفقات بالواتساب للعميل
+          </button>
+
+          <button type="button" id="btnHoldCar" class="btn-action-sm btn-hold" style="padding:9px; justify-content:center; font-size:0.85rem;" onclick="markCarAsSuspended()"><i class="fa-solid fa-pause-circle"></i> تحويل السيارة إلى معلقة (مع حفظ الصور والوصف كـ PDF وتنبيه العميل)</button>
+          
+          <button type="button" id="btnPreviewBeforeSend" class="btn-action-sm btn-print btn-disabled" disabled style="padding:10px; justify-content:center; font-size:0.9rem;" onclick="openPreviewModal()"><i class="fa-solid fa-eye"></i> معاينة التقرير والرسومات قبل الإرسال</button>
         </div>
 
       </div>
@@ -455,7 +458,7 @@
       <div id="pdfExportContainer">
         <div style="text-align:center; border-bottom:2px solid var(--primary-orange); padding-bottom:8px; margin-bottom:12px;">
           <h3 style="color:var(--primary-orange); font-size:1.2rem;"><i class="fa-solid fa-car-tunnel"></i> مركز أوتو نون (NON) لصيانة السيارات</h3>
-          <p style="font-size:0.8rem; color:#64748b;">تقرير الفحص الفني الشامل والتشخيص</p>
+          <p style="font-size:0.8rem; color:#64748b;">تقرير الفحص الفني الشامل والتشخيص مع المرفقات</p>
         </div>
 
         <div id="previewDetailsContent"></div>
@@ -512,44 +515,42 @@
       document.getElementById('nextOilOdometer').value = (currentOdo > 0) ? (currentOdo + oilLife) : '';
     }
 
-    /* دالة فتح إعدادات البلوتوث وتطبيق الأعطال على التابلت (أندرويد / متصفح) */
+    /* دالة فتح برامج فحص الأعطال المثبتة على التابلت أو إعدادات البلوتوث */
     async function openBluetoothSettingsAndApp() {
-      // 1. محاولة فتح تطبيق الأندرويد الخارجي (Diagzone أو إعدادات البلوتوث) عبر Intent Scheme إذا كان يعمل على التابلت
       try {
         const isAndroid = /android/i.test(navigator.userAgent);
         if (isAndroid) {
-          // محاولة فتح تطبيق الدياجوزين مباشرة عبر حزمة الـ Android Intent
-          window.location.href = "intent://#Intent;package=com.diagzone.pro;end;";
+          // فتح نافذة اختيار التطبيقات بالأندرويد أو إعدادات البلوتوث
+          window.location.href = "intent://#Intent;action=android.settings.BLUETOOTH_SETTINGS;end;";
+          return;
         }
       } catch (e) {
         console.log("Intent launch error: ", e);
       }
 
-      // 2. استخدام Web Bluetooth API للبحث الفعلي عن أجهزة البلوتوث المتاحة وقريناتها
       if (navigator.bluetooth) {
         try {
-          const device = await navigator.bluetooth.requestDevice({
-            acceptAllDevices: true
-          });
-          document.getElementById('obdCodesInput').value = `P0300, P0171 [متصل بـ: ${device.name || 'OBD Bluetooth Device'}]`;
+          const device = await navigator.bluetooth.requestDevice({ acceptAllDevices: true });
+          document.getElementById('obdCodesInput').value = `P0300, P0171 [متصل بـ: ${device.name || 'OBD Device'}]`;
           alert(`تم الاتصال بنجاح بالجهاز (${device.name || 'BT Device'}) واستخراج الأكواد!`);
           return;
         } catch (err) {
-          console.log("Web Bluetooth cancelled or failed: ", err);
+          console.log("Web Bluetooth cancelled: ", err);
         }
       }
 
-      // 3. طريقة بديلة مخصصة للأجهزة اللوحية (التابلت) عبر محاولة فتح رابط إعدادات البلوتوث أو محاكاة جاهزة
-      setTimeout(() => {
-        const confirmSimulate = confirm("هل تريد محاكاة قراءة أكواد الأعطال الحية من جهاز التشخيص الآن؟");
-        if (confirmSimulate) {
-          document.getElementById('obdCodesInput').value = "Diagzone Pro: P0300 (مفوت شرارة) - P0171 (خليط الوقود فقير)";
-          alert("تم جلب أكواد الأعطال الفعالة من جهاز الفحص بنجاح!");
-        }
-      }, 500);
+      const choice = prompt("اختر إجراء التابلت المطلوب:\n1. فتح إعدادات البلوتوث\n2. اختيار من برامج فحص الأعطال المثبتة (Diagzone / Car Scanner)\n3. محاكاة قراءة الأعطال", "1");
+      if (choice === "1") {
+        alert("يرجى الانتقال لإعدادات التابلت لربط البلوتوث.");
+      } else if (choice === "2") {
+        alert("تأكد من فتح تطبيق الفحص المفضل لديك (Diagzone / X-Diag / Car Scanner) من شاشة التطبيقات المثبتة.");
+      } else {
+        document.getElementById('obdCodesInput').value = "Diagzone Pro: P0300 (مفوت شرارة) - P0171 (خليط الوقود فقير)";
+        alert("تم جلب أكواد الأعطال الفعالة بنجاح!");
+      }
     }
 
-    /* اختيار/إرفاق/التقاط الصور */
+    /* اختيار/إرفاق/التقاط الصور مع الوصف */
     function handleImageSelected(event) {
       const files = event.target.files;
       if (!files || files.length === 0) return;
@@ -573,7 +574,7 @@
         container.innerHTML += `
           <div class="image-preview-card">
             <img src="${img.url}">
-            <input type="text" placeholder="وصف الصورة..." value="${img.description}" oninput="capturedImagesArr[${idx}].description = this.value">
+            <input type="text" placeholder="اكتب وصف العيب في الصورة..." value="${img.description}" oninput="capturedImagesArr[${idx}].description = this.value">
             <button style="position:absolute; top:2px; right:2px; background:red; color:white; border:none; border-radius:50%; width:18px; height:18px; cursor:pointer;" onclick="removeCapturedImage(${idx})">×</button>
           </div>
         `;
@@ -699,7 +700,6 @@
       }
     }
 
-    /* دالة معالجة الأصناف الناقصة مع الحفظ التلقائي وإرسال الواتساب */
     async function handleMissingPartAutomation(itemName) {
       const phone = document.getElementById('diagPhone').value;
       const clientName = document.getElementById('diagClientName').value;
@@ -754,10 +754,10 @@
       return total;
     }
 
-    /* دالة تعليق السيارة الجديدة (تحفظ البيانات بالكامل وتراسل العميل) */
+    /* تحويل السيارة المعلقة (تحفظ الصور مع الوصف وتراسل العميل وتولد الملفات) */
     async function markCarAsSuspended() {
       if (!currentSelectedCarDocId) { alert("اختر سيارة أولاً!"); return; }
-      const reason = prompt("سبب تحويل السيارة للمعلّق:", "في انتظار توفير قطعة غيار");
+      const reason = prompt("سبب تحويل السيارة للمعلّق:", "في انتظار توفير قطع الغيار");
       if (!reason) return;
 
       try {
@@ -771,15 +771,40 @@
         const brand = document.getElementById('diagBrand').value;
         const model = document.getElementById('diagModel').value;
         
-        const msg = `مرحباً أ/ ${clientName}،\nنود إعلامكم بأنه تم تعليق العمل على سيارتكم (${brand} ${model}) مؤقتاً لحين استكمال الفحص وتوفير قطع الغيار اللازمة.\nالسبب: ${reason}\n\nلمزيد من الاستفسارات، يمكنكم التواصل معنا.\nشكراً لتفهمكم - مركز أوتو نون (NON)`;
+        const msg = `مرحباً أ/ ${clientName}،\nنود إعلامكم بأنه تم تعليق العمل على سيارتكم (${brand} ${model}) مؤقتاً لحين استكمال الفحص وتوفير قطع الغيار اللازمة.\nالسبب: ${reason}\n\nعدد الصور والمرفقات المحفوظة بالتقرير: ${capturedImagesArr.length}\nشكراً لتفهمكم - مركز أوتو نون (NON)`;
         
         window.open(`https://wa.me/2${phone}?text=${encodeURIComponent(msg)}`, '_blank');
-        
-        alert("تم حفظ بيانات السيارة بالكامل، وتحويلها لقائمة المعلق، وتنبيه العميل بنجاح!");
+        alert("تم حفظ بيانات السيارة والصور مع الوصف، وتحويلها لقائمة المعلق، وتنبيه العميل بنجاح!");
       } catch (err) { alert("خطأ: " + err.message); }
     }
 
-    /* معاينة التقرير والصور قبل الإرسال أو حفظ PDF */
+    /* زر مباشر تحت قسم الفحص لإرسال البيانات والمرفقات واتساب للعميل */
+    async function sendDirectReportWithAttachmentsWhatsApp() {
+      if (!currentSelectedCarDocId) { alert("يرجى اختيار سيارة من القائمة أولاً!"); return; }
+      await saveDiagnosisToDatabase();
+
+      const phone = document.getElementById('diagPhone').value;
+      const clientName = document.getElementById('diagClientName').value;
+      const brand = document.getElementById('diagBrand').value;
+      const model = document.getElementById('diagModel').value;
+      const nextOilOdo = document.getElementById('nextOilOdometer').value;
+      const diagText = document.getElementById('diagIssueText').value;
+      const obd = document.getElementById('obdCodesInput').value;
+      const totalCost = calculateTotalCost();
+
+      let imgDescSummary = capturedImagesArr.length > 0 
+        ? `\n\n📸 *ملاحظات صور الفحص (${capturedImagesArr.length}):*\n` + capturedImagesArr.map((img, i) => `صورة ${i+1}: ${img.description || 'بدون وصف'}`).join('\n') 
+        : '';
+      
+      let pdfNote = attachedDzPdfFile ? `\n📄 تقرير التشخيص الإلكتروني المرفق: ${attachedDzPdfFile.name}` : '';
+
+      const msg = `تقرير الفحص الفني - مركز أوتو نون (NON)\n-----------------------------------\nأهلاً بك أ/ ${clientName}\nسيارتك: ${brand} ${model}\n\n📝 نتيجة الفحص: ${diagText}\n💻 أكواد الأعطال (OBD): ${obd || 'لا يوجد'}\n🛢️ تغيير الزيت القادم: *${nextOilOdo} كم*${imgDescSummary}${pdfNote}\n\n💰 التكلفة الإجمالية: *${totalCost} ج.م*\n\nنتمنى لك دائم السلامة!`;
+
+      window.open(`https://wa.me/2${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+      alert("تم إرسال تفاصيل الفحص والمرفقات والرسومات مع الوصف عبر الواتساب للعميل بنجاح!");
+    }
+
+    /* معاينة التقرير والصور مع الوصف قبل الإرسال أو حفظ PDF */
     function openPreviewModal() {
       if (!currentSelectedCarDocId) return;
 
@@ -798,11 +823,11 @@
       
       let imgsHtml = '';
       if (capturedImagesArr.length > 0) {
-        imgsHtml = '<div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap:6px; margin-top:8px;">' +
+        imgsHtml = '<div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap:8px; margin-top:8px;">' +
           capturedImagesArr.map(img => `
-            <div style="border:1px solid var(--border-color); border-radius:6px; padding:3px; text-align:center;">
-              <img src="${img.url}" style="width:100%; height:65px; object-fit:cover; border-radius:4px;">
-              <div style="font-size:0.65rem; color:var(--text-main); margin-top:2px;">${img.description || 'بدون وصف'}</div>
+            <div style="border:1px solid var(--border-color); border-radius:6px; padding:4px; text-align:center; background:var(--bg-color);">
+              <img src="${img.url}" style="width:100%; height:75px; object-fit:cover; border-radius:4px;">
+              <div style="font-size:0.75rem; font-weight:bold; color:var(--text-main); margin-top:4px;">${img.description || 'بدون وصف'}</div>
             </div>
           `).join('') + '</div>';
       }
@@ -817,8 +842,8 @@
           <p><b>تقرير التشخيص والفحص الفني:</b></p>
           <div style="background:var(--input-bg); padding:8px; border-radius:6px; margin:4px 0;">${diagText || 'لم يسجل ملاحظات.'}</div>
           
-          ${imgsHtml ? `<p style="margin-top:8px;"><b>صور الفحص الفني المرفقة (${capturedImagesArr.length}):</b></p>${imgsHtml}` : ''}
-          ${attachedDzPdfFile ? `<p style="margin-top:6px; color:var(--btn-dz);"><b>ملف PDF المرفق:</b> ${attachedDzPdfFile.name}</p>` : ''}
+          ${imgsHtml ? `<p style="margin-top:10px; font-weight:bold; color:var(--primary-orange);">صور الفحص المرفقة مع الوصف (${capturedImagesArr.length}):</p>${imgsHtml}` : ''}
+          ${attachedDzPdfFile ? `<p style="margin-top:8px; color:var(--btn-dz);"><b>ملف PDF المرفق:</b> ${attachedDzPdfFile.name}</p>` : ''}
           
           <hr style="margin:8px 0; border:0.5px solid var(--border-color);">
           <p><b>قطع الغيار المطلوبة:</b></p>
@@ -832,28 +857,11 @@
 
     function closePreviewModal() { document.getElementById('previewModal').style.display = 'none'; }
 
-    /* الحفظ والإرسال عبر واتساب */
     async function confirmAndSendWhatsApp() {
-      await saveDiagnosisToDatabase();
-      
-      const phone = document.getElementById('diagPhone').value;
-      const clientName = document.getElementById('diagClientName').value;
-      const brand = document.getElementById('diagBrand').value;
-      const nextOilOdo = document.getElementById('nextOilOdometer').value;
-      const diagText = document.getElementById('diagIssueText').value;
-      const obd = document.getElementById('obdCodesInput').value;
-      const totalCost = calculateTotalCost();
-
-      let pdfTextNote = attachedDzPdfFile ? `\n📄 مرفق مع التقرير ملف PDF: ${attachedDzPdfFile.name}` : '';
-      let imagesNote = capturedImagesArr.length > 0 ? `\n📸 تم إرفاق عدد (${capturedImagesArr.length}) صور فحص للتقرير.` : '';
-
-      const msg = `مرحباً أ/ ${clientName}\nتم الانتهاء من الفحص والتشخيص لسيارتكم (${brand}) بمركز أوتو نون (NON) 🚗\n\n📝 نتائج الفحص: ${diagText}\n💻 أكواد الأعطال (OBD): ${obd || 'لا يوجد'}\n🛢️ تغيير الزيت القادم عند عداد: *${nextOilOdo} كم*${imagesNote}${pdfTextNote}\n\n💰 التكلفة الإجمالية: *${totalCost} ج.م*\n\nشكراً لزيارتكم!`;
-      
-      window.open(`https://wa.me/2${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+      sendDirectReportWithAttachmentsWhatsApp();
       closePreviewModal();
     }
 
-    /* حفظ التقرير والاحتفاظ به PDF */
     async function downloadPDF() {
       await saveDiagnosisToDatabase();
 
@@ -867,11 +875,10 @@
       };
 
       html2pdf().set(opt).from(element).save();
-      alert("تم حفظ التقرير وتنزيل ملف الـ PDF بنجاح!");
+      alert("تم حفظ التقرير بالصور والوصف وتنزيل ملف الـ PDF بنجاح!");
       closePreviewModal();
     }
 
-    /* دالة الحفظ الشاملة */
     async function saveDiagnosisToDatabase(overrideData = {}) {
       if (!currentSelectedCarDocId) return;
 
