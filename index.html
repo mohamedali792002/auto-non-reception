@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>مركز أوتو نون NON - نظام الاستقبال المتقدم</title>
+  <title>مركز أوتو نون NON - نظام الاستقبال وإدارة الورشة</title>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -16,6 +16,7 @@
       --success: #059669;
       --warning: #d97706;
       --danger: #ef4444;
+      --info: #0284c7;
       --bg: #f8fafc;
       --card-bg: #ffffff;
       --text: #0f172a;
@@ -30,6 +31,7 @@
       --success: #10b981;
       --warning: #f59e0b;
       --danger: #f87171;
+      --info: #38bdf8;
       --bg: #0f172a;
       --card-bg: #1e293b;
       --text: #f1f5f9;
@@ -41,7 +43,6 @@
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; transition: background-color 0.2s, color 0.2s; }
     body { background-color: var(--bg); color: var(--text); padding: 12px; }
 
-    /* هيدر النظام */
     .header {
       background: var(--primary); color: white; padding: 12px 20px; border-radius: 12px;
       display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;
@@ -57,11 +58,10 @@
     .header-logo-img { max-width: 100%; max-height: 100%; object-fit: contain; }
     .header-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 
-    /* القائمة المنسدلة */
     .dropdown { position: relative; display: inline-block; }
     .dropdown-btn { background: var(--accent); color: var(--btn-text); border: none; padding: 10px 14px; border-radius: 8px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 0.85rem; }
     .dropdown-content {
-      display: none; position: absolute; left: 0; top: 105%; background-color: var(--card-bg); min-width: 240px;
+      display: none; position: absolute; left: 0; top: 105%; background-color: var(--card-bg); min-width: 250px;
       box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); border-radius: 8px; border: 1px solid var(--border); z-index: 100; overflow: hidden;
     }
     .dropdown-content a, .dropdown-content label {
@@ -71,10 +71,9 @@
     .dropdown-title { background: var(--table-header); font-weight: bold; padding: 6px 12px; font-size: 0.75rem; color: var(--text); opacity: 0.8; }
     .dropdown:hover .dropdown-content { display: block; }
 
-    /* التقسيم العام */
     .container { display: grid; grid-template-columns: 460px 1fr; gap: 20px; }
     
-    @media (max-width: 1024px) {
+    @media (max-width: 1100px) {
       .container { grid-template-columns: 1fr; }
     }
 
@@ -101,7 +100,7 @@
     
     .plate-wrapper { display: flex; gap: 10px; justify-content: center; align-items: center; margin-top: 5px; background: var(--table-header); padding: 10px; border-radius: 8px; }
     .plate-group { display: flex; gap: 4px; align-items: center; justify-content: center; }
-    .plate-group-label { font-size: 0.72rem; font-weight: bold; color: var(--text); margin-bottom: 3px; text-align: center; }
+    .plate-group-label { font-size: 0.75rem; font-weight: bold; color: var(--text); margin-bottom: 4px; text-align: center; }
     .plate-input { width: 40px; height: 44px; text-align: center; font-size: 1.2rem; font-weight: bold; border: 2px solid var(--accent) !important; text-transform: uppercase; border-radius: 6px; }
     
     .gov-badge { background: #e0f2fe; color: #0369a1; text-align: center; padding: 6px; border-radius: 6px; font-weight: bold; font-size: 0.82rem; margin-top: 8px; display: none; }
@@ -112,34 +111,50 @@
     }
     body.dark-mode .alert-notice { background: #064e3b; color: #a7f3d0; border-color: #059669; }
 
+    .alert-danger-notice {
+      background: #fee2e2; color: #991b1b; padding: 10px; border-radius: 8px; font-size: 0.85rem; margin-top: 8px; display: none; border: 1px solid #ef4444; line-height: 1.4; animation: fadeIn 0.3s ease-in-out;
+    }
+    body.dark-mode .alert-danger-notice { background: #7f1d1d; color: #fecaca; border-color: #f87171; }
+
     @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* تخصيص الأزرار */
     .btn { background: var(--accent); color: var(--btn-text); border: none; padding: 10px 14px; border-radius: 8px; font-weight: bold; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; text-decoration: none; font-size: 0.85rem; }
     .btn:hover { opacity: 0.9; }
     .btn-block { width: 100%; }
     .btn-success { background: var(--success); color: #ffffff; }
     .btn-warning { background: var(--warning); color: #ffffff; }
     .btn-danger { background: var(--danger); color: #ffffff; }
+    .btn-info { background: var(--info); color: #ffffff; }
     .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
 
-    .sync-status { width: 100%; background: #dcfce7; color: #166534; padding: 8px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: bold; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
-    body.dark-mode .sync-status { background: #064e3b; color: #a7f3d0; }
+    .filter-bar {
+      display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 12px; background: var(--table-header); padding: 10px; border-radius: 8px; flex-wrap: wrap;
+    }
 
     .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
-    table { width: 100%; border-collapse: collapse; margin-top: 5px; min-width: 650px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 5px; min-width: 750px; }
     th, td { padding: 9px 10px; text-align: right; border-bottom: 1px solid var(--border); font-size: 0.82rem; color: var(--text); }
     th { background: var(--table-header); font-weight: bold; white-space: nowrap; }
     
     .badge-queue { background: var(--accent); color: white; padding: 4px 8px; border-radius: 6px; font-weight: bold; }
+    
+    /* ألوان شارات الحالات */
+    .status-badge { padding: 4px 8px; border-radius: 6px; font-weight: bold; font-size: 0.75rem; display: inline-block; }
+    .status-waiting { background: #fef3c7; color: #92400e; }
+    .status-diag { background: #e0f2fe; color: #0369a1; }
+    .status-parts { background: #fce7f3; color: #9d174d; }
+    .status-fixing { background: #dbeafe; color: #1e40af; }
+    .status-testing { background: #fae8ff; color: #86198f; }
+    .status-hold { background: #fee2e2; color: #991b1b; }
+    .status-done { background: #dcfce7; color: #166534; }
 
-    /* Modal النوافذ المنبثقة */
+    .status-select { font-size: 0.78rem; padding: 4px; border-radius: 6px; font-weight: bold; border: 1px solid var(--border); background: var(--card-bg); color: var(--text); margin-top: 4px; }
+
     .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; justify-content: center; align-items: center; z-index: 1000; padding: 15px; }
     .modal-content { background: var(--card-bg); color: var(--text); padding: 20px; border-radius: 12px; width: 100%; max-width: 450px; text-align: center; border: 1px solid var(--border); position: relative; }
 
     #scannerRegion { width: 100%; min-height: 250px; background: #000; border-radius: 8px; overflow: hidden; margin-top: 10px; }
 
-    /* قالب الطباعة للـ PDF */
     #pdfPrintTemplate {
       display: none; background: #ffffff; color: #000000; padding: 20px; position: relative; font-family: 'Segoe UI', Tahoma, sans-serif;
     }
@@ -177,7 +192,7 @@
   <!-- نافذة تسجيل الدخول -->
   <div id="loginModal" class="modal">
     <div class="modal-content">
-      <h2><i class="fa-solid fa-lock"></i> دخول الاستقبال</h2>
+      <h2><i class="fa-solid fa-lock"></i> دخول الاستقبال والورشة</h2>
       <p style="font-size: 0.8rem; color: #64748b; margin: 8px 0 15px;">أدخل اسم المستخدم وكلمة المرور</p>
       <div class="form-group"><input type="text" id="loginUser" placeholder="اسم المستخدم"></div>
       <div class="form-group"><input type="password" id="loginPass" placeholder="كلمة المرور"></div>
@@ -192,7 +207,7 @@
       </div>
       <div>
         <h2 style="font-size:1.1rem;">مركز أوتو نون (NON)</h2>
-        <small style="color: #cbd5e1; font-size:0.75rem;">نظام الاستقبال والصيانة المتقدم</small>
+        <small style="color: #cbd5e1; font-size:0.75rem;">نظام الاستقبال ومتابعة حالة الصيانة</small>
       </div>
     </div>
     <div class="header-actions">
@@ -205,7 +220,7 @@
           <a onclick="exportCarDatabase()"><i class="fa-solid fa-file-export" style="color:#2563eb;"></i> تصدير الماركات إلى Excel</a>
           
           <div class="dropdown-title">👤 سجل العملاء والصيانة</div>
-          <a onclick="exportAllClientsTXT()"><i class="fa-solid fa-file-lines" style="color:#d97706;"></i> تصدير سجل العملاء (TXT)</a>
+          <a onclick="exportAllClientsTXT()"><i class="fa-solid fa-file-lines" style="color:#d97706;"></i> تصدير سجل اليومية (TXT)</a>
           <a onclick="generateCustomPDF()"><i class="fa-solid fa-file-pdf" style="color:#ef4444;"></i> تصدير تقرير العملاء (PDF)</a>
 
           <div class="dropdown-title">⚙️ إعدادات النظام</div>
@@ -230,12 +245,12 @@
       </h3>
 
       <form id="receptionForm">
-        <!-- البحث والاستعلام باللوحة -->
+        <!-- البحث والاستعلام باللوحة (بدون يمين/شمال/أسهم) -->
         <div class="form-group">
           <label>رقم اللوحة المعدنية:</label>
           <div class="plate-wrapper">
             <div>
-              <div class="plate-group-label">الحروف ️</div>
+              <div class="plate-group-label">حروف اللوحة</div>
               <div class="plate-group">
                 <input type="text" id="p_char1" class="plate-input" maxlength="1" oninput="moveNext(this, 'p_char2')">
                 <input type="text" id="p_char2" class="plate-input" maxlength="1" oninput="moveNext(this, 'p_char3')">
@@ -246,7 +261,7 @@
             <div style="font-size: 1.2rem; font-weight: bold; color: #94a3b8;">-</div>
 
             <div>
-              <div class="plate-group-label">الأرقام </div>
+              <div class="plate-group-label">أرقام اللوحة</div>
               <div class="plate-group" dir="ltr">
                 <input type="text" id="p_num1" class="plate-input" maxlength="1" oninput="moveNext(this, 'p_num2')">
                 <input type="text" id="p_num2" class="plate-input" maxlength="1" oninput="moveNext(this, 'p_num3')">
@@ -257,6 +272,7 @@
           </div>
           <div id="govBadge" class="gov-badge"></div>
           <div id="alertNotice" class="alert-notice"></div>
+          <div id="alertDangerNotice" class="alert-danger-notice"></div>
         </div>
 
         <div class="form-group">
@@ -293,7 +309,6 @@
             </select>
           </div>
           
-          <!-- لون السيارة بقائمة منسدلة وخيار إضافة لون جديد -->
           <div class="form-group">
             <label>لون السيارة:</label>
             <select id="carColorSelect" onchange="handleColorChange()">
@@ -328,24 +343,24 @@
           </div>
         </div>
 
-        <!-- الشاسيه والسيريال -->
+        <!-- الشاسيه والسيريال (السيريال مولد افتراضياً) -->
         <div class="form-row">
           <div class="form-group">
             <label><i class="fa-solid fa-car"></i> رقم الشاسيه (VIN):</label>
             <input type="text" id="chassisNo" placeholder="رقم شاسيه السيارة (اختياري)">
           </div>
           <div class="form-group">
-            <label><i class="fa-solid fa-barcode"></i> الرقم التسلسلي (السيريال):</label>
+            <label><i class="fa-solid fa-barcode"></i> السيريال نمبر (تلقائي لمتابعة الفحص):</label>
             <div style="display:flex; gap:6px;">
-              <input type="text" id="serialNo" placeholder="ادخل السيريال أو امسح الباركود" oninput="searchCarBySerialDirect()">
-              <button type="button" onclick="startCameraScanner()" class="btn btn-warning" title="فتح الكاميرا لمسح السيريال" style="padding: 0 12px; white-space:nowrap;">
-                <i class="fa-solid fa-camera"></i> اسكان
+              <input type="text" id="serialNo" readonly style="background-color: var(--table-header); font-weight:bold; color:var(--accent);" placeholder="مولد تلقائياً...">
+              <button type="button" onclick="startCameraScanner()" class="btn btn-warning" title="فتح الكاميرا لمسح باركود سيريال" style="padding: 0 12px; white-space:nowrap;">
+                <i class="fa-solid fa-camera"></i>
               </button>
             </div>
           </div>
         </div>
 
-        <!-- القسم المحول إليه ونوع الخدمة المرتبطان بكامل المرونة -->
+        <!-- القسم المحول إليه ونوع الخدمة المرتبطان -->
         <div class="form-row">
           <div class="form-group">
             <label>القسم المحول إليه:</label>
@@ -367,10 +382,9 @@
           </div>
         </div>
 
-        <!-- المربع الديناميكي لتفاصيل الخدمة/المشتملات الإضافية (يعمل عند اختيار خدمة) -->
         <div class="form-group" id="serviceDetailsContainer" style="display: none; animation: fadeIn 0.3s ease-in-out;">
           <label style="color:var(--accent);"><i class="fa-solid fa-circle-plus"></i> تفاصيل الخدمة الإضافية / المشتملات المطلوبة:</label>
-          <input type="text" id="serviceDetails" placeholder="أدخل المشتملات أو التفاصيل الإضافية التي يرغب العميل بإضافتها...">
+          <input type="text" id="serviceDetails" placeholder="أدخل المشتملات أو التفاصيل الإضافية...">
         </div>
 
         <div class="form-group">
@@ -378,19 +392,35 @@
           <textarea id="carIssue" rows="2" placeholder="أدخل شكوى العميل أو العطل المطلوب إصلاحه..."></textarea>
         </div>
 
-        <button type="button" id="submitBtn" onclick="saveCar()" class="btn btn-block" style="font-size:1rem; padding:12px;"><i class="fa-solid fa-cloud-arrow-up"></i> تسجيل وتوجيه السيارة</button>
+        <button type="button" id="submitBtn" onclick="saveCar()" class="btn btn-block" style="font-size:1rem; padding:12px;"><i class="fa-solid fa-cloud-arrow-up"></i> تسجيل ودخول قائمة الانتظار</button>
       </form>
     </div>
 
-    <!-- سجل العملاء -->
+    <!-- سجل العملاء وإدارة حالات اليومية والإنهاء -->
     <div class="card">
       <h3>
-        <span><i class="fa-solid fa-table-list"></i> سجل العملاء والصيانة</span>
+        <span><i class="fa-solid fa-list-check"></i> قائمة انتظار السيارات وحالات الصيانة الحالية</span>
+        <button onclick="closeAndArchiveDay()" class="btn btn-danger" style="font-size:0.8rem; padding:6px 12px;" title="ترحيل السيارات المستكملة وتثبيت المعلقة كأول دور للغد">
+          <i class="fa-solid fa-box-archive"></i> إغلاق وتقفيل اليومية
+        </button>
       </h3>
 
-      <div class="sync-status" id="syncStatus">
-        <span><i class="fa-solid fa-circle-info"></i> حالة التحديث المباشر للملف: لم يربط بعد.</span>
-        <button onclick="setupAutoUpdateFile()" class="btn btn-warning" style="padding:4px 8px; font-size:0.75rem;"><i class="fa-solid fa-link"></i> ربط وتحديث TXT تلقائي</button>
+      <!-- شريط الفلترة وتحديد العرض -->
+      <div class="filter-bar">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <label style="font-size:0.8rem; font-weight:bold;">عرض السجل:</label>
+          <select id="viewFilter" onchange="applyFilters()" style="padding:6px; border-radius:6px; border:1px solid var(--border); background:var(--card-bg); color:var(--text); font-size:0.82rem;">
+            <option value="ACTIVE">🚗 السيارات النشطة بالورشة حالياً</option>
+            <option value="DELIVERED">✅ السيارات التي تم تسليمها / إصلاحها</option>
+            <option value="ALL">📋 كل السجلات والتاريخ</option>
+          </select>
+        </div>
+
+        <div style="display:flex; align-items:center; gap:8px;">
+          <label style="font-size:0.8rem; font-weight:bold;">فلترة التاريخ:</label>
+          <input type="date" id="dateFilter" onchange="applyFilters()" style="padding:5px; border-radius:6px; border:1px solid var(--border); font-size:0.82rem; background:var(--card-bg); color:var(--text);">
+          <button onclick="resetDateFilter()" class="btn btn-outline" style="padding:4px 8px; font-size:0.75rem;">الكل</button>
+        </div>
       </div>
 
       <div class="table-responsive">
@@ -399,10 +429,10 @@
             <tr>
               <th>الدور</th>
               <th>اسم العميل</th>
-              <th>السيارة واللون</th>
-              <th>اللوحة والمحافظة</th>
-              <th>الشاسيه والسيريال</th>
+              <th>السيارة واللوحة</th>
+              <th>السيريال نمبر</th>
               <th>القسم والخدمة</th>
+              <th>حالة السيارة بالورشة</th>
               <th>الإجراءات</th>
             </tr>
           </thead>
@@ -421,7 +451,7 @@
         <img id="pdfHeaderLogoImg" src="NON.jpg" class="pdf-logo-img" alt="NON Logo">
         <div>
           <h2 style="font-size:1.3rem; color:#0f172a; margin:0;">مركز أوتو نون لصيانة السيارات (NON)</h2>
-          <p style="font-size:0.78rem; color:#475569; margin:0;">تقرير سجل العملاء والصيانة الشامل</p>
+          <p style="font-size:0.78rem; color:#475569; margin:0;">تقرير سجل السيارات وحالات التشخيص والصيانة</p>
         </div>
       </div>
       <div style="text-align:left; font-size:0.78rem; color:#334155;">
@@ -435,10 +465,10 @@
         <tr>
           <th style="width: 6%;">الدور</th>
           <th style="width: 20%;">اسم العميل والموبايل</th>
-          <th style="width: 18%;">السيارة واللون</th>
-          <th style="width: 18%;">اللوحة والمحافظة</th>
-          <th style="width: 18%;">الشاسيه / السيريال</th>
-          <th style="width: 20%;">القسم والخدمة / الشكوى</th>
+          <th style="width: 18%;">السيارة واللوحة</th>
+          <th style="width: 16%;">السيريال والشاسيه</th>
+          <th style="width: 20%;">القسم والخدمة</th>
+          <th style="width: 20%;">حالة التشخيص والصيانة</th>
         </tr>
       </thead>
       <tbody id="pdfPrintTbody"></tbody>
@@ -462,6 +492,17 @@
     let allCarsCache = [];
     let fileHandle = null;
     let html5QrScanner = null;
+    let isCurrentPlateDuplicate = false;
+
+    const STATUSES = {
+      WAITING: { label: "قائمة الانتظار", class: "status-waiting" },
+      DIAGNOSIS: { label: "مع فني التشخيص", class: "status-diag" },
+      PARTS_WAIT: { label: "بانتظار قطع الغيار", class: "status-parts" },
+      FIXING: { label: "جاري إصلاح الأعطال", class: "status-fixing" },
+      TESTING: { label: "جاري اختبار السيارة بعد التصليح", class: "status-testing" },
+      HOLD: { label: "السيارة معلقة لحين استكمال قطع الغيار", class: "status-hold" },
+      DONE: { label: "تم إصلاح الأعطال (جاهزة للعميل)", class: "status-done" }
+    };
 
     const logoFormats = ['NON.jpg', 'NON.PNG', 'non.jpg', 'non.png', 'NON.jpeg', 'non.jpeg'];
     let formatIndex = 0;
@@ -511,7 +552,6 @@
       setTimeout(() => { document.getElementById('themeIcon').className = 'fa-solid fa-sun'; }, 100);
     }
 
-    // ربط الخدمات بالأقسام المحول إليها
     const subDeptData = {
       "ميكانيكا": ["عمرة موتور", "تغيير سير سيرفيس/كاتينة", "صيانة فتيس", "تغيير طلمبة مياه", "تغيير ردياتير", "فحص وتسريب زيت"],
       "كهرباء": ["فحص كمبيوتر واكواد", "تغيير بطارية", "صيانة دينامو / مارش", "إصلاح تكييف وشحن فريون", "إصلاح ضفيرة وتمديدات"],
@@ -537,6 +577,13 @@
         originSelect.innerHTML += `<option value="${origin}">${origin}</option>`;
       });
       filterBrands();
+      generateDefaultSerialNumber();
+    }
+
+    // التوليد الافتراضي للسيريال نمبر
+    function generateDefaultSerialNumber() {
+      const randomSN = 'NON-' + Math.floor(100000 + Math.random() * 900000);
+      document.getElementById('serialNo').value = randomSN;
     }
 
     function filterBrands() {
@@ -565,7 +612,6 @@
       }
     }
 
-    /* التحكم في خيار اللون الإضافي */
     function handleColorChange() {
       const colorSelect = document.getElementById('carColorSelect');
       const customInput = document.getElementById('customColorInput');
@@ -586,7 +632,6 @@
       return colorSelect.value;
     }
 
-    /* ربط القسم بالخدمات */
     function handleDeptChange() {
       const dept = document.getElementById('carDept').value;
       const subDeptSelect = document.getElementById('carSubDeptSelect');
@@ -606,7 +651,6 @@
       handleServiceChange();
     }
 
-    /* إظهار خانة المشتملات والخدمات الإضافية عند اختيار خدمة */
     function handleServiceChange() {
       const subDeptSelect = document.getElementById('carSubDeptSelect');
       const detailsContainer = document.getElementById('serviceDetailsContainer');
@@ -645,7 +689,6 @@
       document.getElementById('clientName').value = car.name || '';
       document.getElementById('clientPhone').value = car.phone || '';
 
-      /* ضبط اللون */
       const colorSelect = document.getElementById('carColorSelect');
       const customInput = document.getElementById('customColorInput');
       const existingOptions = Array.from(colorSelect.options).map(o => o.value);
@@ -662,7 +705,7 @@
       document.getElementById('carYear').value = car.year || '';
       document.getElementById('engineCapacity').value = car.engine || '1600 CC';
       document.getElementById('chassisNo').value = (car.chassis && car.chassis !== 'غير مدخل') ? car.chassis : '';
-      document.getElementById('serialNo').value = (car.serialNo && car.serialNo !== 'غير مدخل') ? car.serialNo : '';
+      if (car.serialNo) document.getElementById('serialNo').value = car.serialNo;
 
       if (car.brand) {
         for (const origin in carDatabase) {
@@ -691,13 +734,6 @@
       const badge = document.getElementById('govBadge');
       badge.textContent = `المحافظة التابعة: ${car.gov || 'عام'}`;
       badge.style.display = 'block';
-
-      const notice = document.getElementById('alertNotice');
-      notice.innerHTML = `
-        <div><i class="fa-solid fa-circle-check"></i> <strong>⚠️ هذه السيارة مسجلة سابقاً في النظام!</strong></div>
-        <div style="font-size:0.8rem; margin-top:2px;">تم استدعاء بيانات العميل: <b>${car.name}</b> (موبايل: <b>${car.phone}</b>) بنجاح.</div>
-      `;
-      notice.style.display = 'block';
     }
 
     function checkPlateAuto() {
@@ -708,8 +744,15 @@
 
       const badge = document.getElementById('govBadge');
       const notice = document.getElementById('alertNotice');
+      const dangerNotice = document.getElementById('alertDangerNotice');
 
-      if (!c1) { badge.style.display = 'none'; notice.style.display = 'none'; return; }
+      if (!c1) { 
+        badge.style.display = 'none'; 
+        notice.style.display = 'none'; 
+        dangerNotice.style.display = 'none'; 
+        isCurrentPlateDuplicate = false;
+        return; 
+      }
 
       let gov = "محافظة أخرى / قياسية";
       if (c1 === 'س') gov = "الإسكندرية";
@@ -725,36 +768,39 @@
       badge.style.display = 'block';
       badge.dataset.gov = gov;
 
-      const plateFull = `${c1}${c2}${c3} - ${document.getElementById('p_num1').value}${document.getElementById('p_num2').value}${document.getElementById('p_num3').value}${document.getElementById('p_num4').value}`.trim();
+      const pCharsClean = `${c1}${c2}${c3}`.replace(/\s+/g, '');
+      const pNumsClean = `${document.getElementById('p_num1').value}${document.getElementById('p_num2').value}${document.getElementById('p_num3').value}${document.getElementById('p_num4').value}`.replace(/\s+/g, '');
+      const plateKey = `${pCharsClean}-${pNumsClean}`;
 
-      if (p1) {
-        const pastCar = allCarsCache.slice().reverse().find(c => c.plate.replace(/\s+/g, '') === plateFull.replace(/\s+/g, ''));
+      if (p1 && pNumsClean.length >= 1) {
+        // منع التكرار ومنع التسجيل للسيارات الحالية بالورشة وقائمة الانتظار (أي حالة غير DONE)
+        const activeDuplicate = allCarsCache.find(c => c.status !== 'DONE' && (c.plate || '').replace(/\s+/g, '') === plateKey);
+        
+        if (activeDuplicate) {
+          isCurrentPlateDuplicate = true;
+          dangerNotice.innerHTML = `⚠️ <strong>السيارة متواجدة بالفعل بالورشة / قائمة الانتظار!</strong><br>العميل: ${activeDuplicate.name} | الحالة الحالية: (${STATUSES[activeDuplicate.status || 'WAITING'].label})`;
+          dangerNotice.style.display = 'block';
+          notice.style.display = 'none';
+          fillFormWithCarData(activeDuplicate);
+          return;
+        } else {
+          isCurrentPlateDuplicate = false;
+          dangerNotice.style.display = 'none';
+        }
+
+        // استدعاء البيانات تلقائياً إذا كانت السيارة مسجلة مسبقاً وتَمَّ تسليمها بأوقات سابقة
+        const pastCar = allCarsCache.slice().reverse().find(c => (c.plate || '').replace(/\s+/g, '') === plateKey);
         if (pastCar) {
           fillFormWithCarData(pastCar);
+          generateDefaultSerialNumber(); // استبدال السيريال بسيريال جديد لدورة الصيانة الجديدة
+          notice.innerHTML = `
+            <div><i class="fa-solid fa-circle-check"></i> <strong>سيارة مسجلة سابقاً في النظام</strong></div>
+            <div style="font-size:0.8rem; margin-top:2px;">تم استدعاء بيانات العميل: <b>${pastCar.name}</b> وتوليد سيريال صيانة جديد.</div>
+          `;
+          notice.style.display = 'block';
         } else {
           notice.style.display = 'none';
         }
-      }
-    }
-
-    function searchCarBySerialDirect() {
-      const serial = document.getElementById('serialNo').value.trim().toLowerCase();
-      const notice = document.getElementById('alertNotice');
-
-      if (!serial) {
-        notice.style.display = 'none';
-        return;
-      }
-
-      const foundCar = allCarsCache.slice().reverse().find(c => {
-        const cSerial = (c.serialNo || '').trim().toLowerCase();
-        return (cSerial.length >= 2 && cSerial === serial);
-      });
-
-      if (foundCar) {
-        fillFormWithCarData(foundCar);
-      } else {
-        notice.style.display = 'none';
       }
     }
 
@@ -770,13 +816,6 @@
         (decodedText) => {
           document.getElementById('serialNo').value = decodedText;
           stopCameraScanner();
-
-          const foundCar = allCarsCache.slice().reverse().find(c => (c.serialNo || '').trim().toLowerCase() === decodedText.trim().toLowerCase());
-          if (foundCar) {
-            fillFormWithCarData(foundCar);
-          } else {
-            alert(`تم اسكان السيريال (${decodedText}) - هذه السيارة غير مسجلة سابقاً.`);
-          }
         },
         () => {}
       ).catch(() => {
@@ -787,11 +826,7 @@
 
     function stopCameraScanner() {
       if (html5QrScanner && html5QrScanner.isScanning) {
-        html5QrScanner.stop().then(() => {
-          document.getElementById('scannerModal').style.display = 'none';
-        }).catch(() => {
-          document.getElementById('scannerModal').style.display = 'none';
-        });
+        html5QrScanner.stop().then(() => { document.getElementById('scannerModal').style.display = 'none'; });
       } else {
         document.getElementById('scannerModal').style.display = 'none';
       }
@@ -801,47 +836,21 @@
       document.getElementById('receptionForm').reset();
       document.getElementById('govBadge').style.display = 'none';
       document.getElementById('alertNotice').style.display = 'none';
+      document.getElementById('alertDangerNotice').style.display = 'none';
       document.getElementById('customColorInput').style.display = 'none';
       document.getElementById('carSubDeptSelect').disabled = true;
       document.getElementById('carSubDeptSelect').innerHTML = '<option value="">اختر القسم أولاً لربط الخدمات</option>';
       document.getElementById('serviceDetailsContainer').style.display = 'none';
-    }
-
-    async function setupAutoUpdateFile() {
-      if ('showSaveFilePicker' in window) {
-        try {
-          fileHandle = await window.showSaveFilePicker({
-            suggestedName: `سجل_عملاء_NON_${new Date().toLocaleDateString('ar-EG').replace(/\//g, '-')}.txt`,
-            types: [{ description: 'Text Documents', accept: { 'text/plain': ['.txt'] } }],
-          });
-          document.getElementById('syncStatus').innerHTML = `
-            <span><i class="fa-solid fa-link"></i> مرتبط بالملف: <strong>${fileHandle.name}</strong></span>
-            <button onclick="writeToLinkedFile()" class="btn btn-success" style="padding:4px 8px; font-size:0.75rem;"><i class="fa-solid fa-rotate"></i> تحديث</button>
-          `;
-          await writeToLinkedFile();
-          alert('تم ربط الملف المباشر بنجاح!');
-        } catch (err) {
-          if (err.name !== 'AbortError') alert('خطأ أثناء الربط: ' + err.message);
-        }
-      } else {
-        alert('ميزة التحديث المباشر تعمل على متصفح Chrome و Edge.');
-      }
-    }
-
-    async function writeToLinkedFile() {
-      if (!fileHandle) return;
-      try {
-        const writable = await fileHandle.createWritable();
-        let fullContent = "=== سجل عملاء مركز أوتو نون NON (تحديث تلقائي) ===\n\n";
-        allCarsCache.forEach(car => {
-          fullContent += createCarTxtBlock(car) + "\n\n------------------------------------------------\n\n";
-        });
-        await writable.write(fullContent);
-        await writable.close();
-      } catch (err) { console.error(err); }
+      isCurrentPlateDuplicate = false;
+      generateDefaultSerialNumber();
     }
 
     async function saveCar() {
+      if (isCurrentPlateDuplicate) {
+        alert("⚠️ لا يمكن تسجيل السيارة مجدداً! رقم السيارة متواجد بالفعل في قائمة الانتظار / حالة الصيانة الحالية ولم يُنهي صيانته بعد.");
+        return;
+      }
+
       const name = document.getElementById('clientName').value.trim();
       const phone = document.getElementById('clientPhone').value.trim();
       const dept = document.getElementById('carDept').value;
@@ -856,11 +865,14 @@
       const plateFull = `${pChars} - ${pNums}`;
       const govName = document.getElementById('govBadge').dataset.gov || 'عام';
 
-      const idDoc = 'SN-' + Math.floor(100000 + Math.random() * 900000);
+      const serialNoVal = document.getElementById('serialNo').value.trim();
+      const idDoc = 'CAR-' + Date.now();
+
+      const activeCarsToday = allCarsCache.filter(c => c.status !== 'DONE' && c.date === new Date().toLocaleDateString('ar-EG'));
 
       const newCar = {
         docId: idDoc,
-        queueNo: allCarsCache.length + 1,
+        queueNo: activeCarsToday.length + 1,
         name: name,
         phone: phone,
         origin: document.getElementById('carOrigin').value,
@@ -872,11 +884,12 @@
         plate: plateFull,
         gov: govName,
         chassis: document.getElementById('chassisNo').value.trim() || 'غير مدخل',
-        serialNo: document.getElementById('serialNo').value.trim() || 'غير مدخل',
+        serialNo: serialNoVal,
         dept: dept,
         subDept: document.getElementById('carSubDeptSelect').value,
         serviceDetails: document.getElementById('serviceDetails').value.trim(),
         issue: document.getElementById('carIssue').value.trim(),
+        status: "WAITING",
         date: new Date().toLocaleDateString('ar-EG'),
         time: new Date().toLocaleTimeString('ar-EG'),
         createdAt: Date.now()
@@ -884,59 +897,139 @@
 
       try {
         await db.collection('cars').doc(newCar.docId).set(newCar);
-        if (fileHandle) await writeToLinkedFile();
-
         sendWhatsAppMsg(newCar);
         clearForm();
-        alert(`تم تسجيل العميل بنجاح (رقم الدور #${newCar.queueNo})!`);
+        alert(`تم تسجيل السيارة بنجاح ودخولها قائمة الانتظار (#${newCar.queueNo})!\nسيريال المتابعة للعميل: ${newCar.serialNo}`);
       } catch (err) { alert('خطأ في الحفظ: ' + err.message); }
     }
 
-    db.collection('cars').orderBy('createdAt', 'asc').onSnapshot(async (snapshot) => {
-      allCarsCache = [];
-      const tbody = document.getElementById('receptionTable');
-      tbody.innerHTML = '';
+    async function updateCarStatus(docId, newStatus) {
+      try {
+        await db.collection('cars').doc(docId).update({
+          status: newStatus,
+          lastUpdated: Date.now()
+        });
+      } catch (err) {
+        alert('خطأ في تحديث الحالة: ' + err.message);
+      }
+    }
 
-      let index = 1;
+    db.collection('cars').orderBy('createdAt', 'asc').onSnapshot((snapshot) => {
+      allCarsCache = [];
       snapshot.forEach((doc) => {
         const car = doc.data();
         car.docId = doc.id;
-        car.queueNo = index;
         allCarsCache.push(car);
+      });
+
+      renderTable();
+    });
+
+    function applyFilters() { renderTable(); }
+
+    function resetDateFilter() {
+      document.getElementById('dateFilter').value = '';
+      renderTable();
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('receptionTable');
+      tbody.innerHTML = '';
+
+      const viewFilter = document.getElementById('viewFilter').value;
+      const dateFilterVal = document.getElementById('dateFilter').value;
+
+      let filtered = allCarsCache.filter(car => {
+        if (viewFilter === 'ACTIVE' && car.status === 'DONE') return false;
+        if (viewFilter === 'DELIVERED' && car.status !== 'DONE') return false;
+
+        if (dateFilterVal) {
+          const selectedDateFormatted = new Date(dateFilterVal).toLocaleDateString('ar-EG');
+          if (car.date !== selectedDateFormatted) return false;
+        }
+
+        return true;
+      });
+
+      let queueCounter = 1;
+
+      filtered.forEach((car) => {
+        const statusObj = STATUSES[car.status || 'WAITING'];
+
+        let statusOptionsHtml = '';
+        Object.keys(STATUSES).forEach(key => {
+          statusOptionsHtml += `<option value="${key}" ${car.status === key ? 'selected' : ''}>${STATUSES[key].label}</option>`;
+        });
 
         tbody.innerHTML += `
           <tr>
-            <td><span class="badge-queue">#${car.queueNo}</span></td>
+            <td><span class="badge-queue">#${car.status === 'DONE' ? 'تم' : queueCounter++}</span></td>
             <td><strong>${car.name}</strong><br><small style="color:#64748b">${car.phone}</small></td>
-            <td><strong>${car.brand || ''} ${car.model || ''}</strong><br><small style="color:#2563eb">اللون: ${car.color || 'عام'}</small></td>
-            <td>${car.plate}<br><small style="color:#64748b">${car.gov}</small></td>
-            <td><small>شاسيه: <strong>${car.chassis}</strong></small><br><small style="color:#d97706">سيريال: <strong>${car.serialNo || 'بدون'}</strong></small></td>
+            <td><strong>${car.brand || ''} ${car.model || ''}</strong><br><small style="color:#2563eb">اللوحة: ${car.plate}</small></td>
+            <td><strong style="color:#d97706; font-size:0.9rem;">${car.serialNo || 'بدون'}</strong><br><small style="color:#64748b">شاسيه: ${car.chassis}</small></td>
             <td>
               <strong>${car.dept}</strong>
               ${car.subDept ? `<br><small style="color:#059669">${car.subDept}</small>` : ''}
-              ${car.serviceDetails ? `<br><small style="color:#2563eb">المشتملات: ${car.serviceDetails}</small>` : ''}
-              ${car.issue ? `<br><small style="color:#ef4444">العطل: ${car.issue}</small>` : ''}
+              ${car.serviceDetails ? `<br><small style="color:#2563eb">${car.serviceDetails}</small>` : ''}
             </td>
             <td>
-              <button onclick='exportSingleClientTXT(${JSON.stringify(car)})' class="btn btn-success" style="padding:4px 8px; font-size:0.75rem;" title="تصدير TXT"><i class="fa-solid fa-download"></i></button>
-              <button onclick="deleteCar('${car.docId}')" class="btn btn-danger" style="padding:4px 8px; font-size:0.75rem;" title="حذف العميل"><i class="fa-solid fa-trash"></i></button>
+              <span class="status-badge ${statusObj.class}">${statusObj.label}</span>
+              <br>
+              <select class="status-select" onchange="updateCarStatus('${car.docId}', this.value)">
+                ${statusOptionsHtml}
+              </select>
+            </td>
+            <td>
+              <button onclick='sendWhatsAppMsg(${JSON.stringify(car)})' class="btn btn-success" style="padding:4px 8px; font-size:0.75rem;" title="إرسال السيريال عبر الواتساب"><i class="fa-brands fa-whatsapp"></i> واتساب</button>
+              <button onclick="deleteCar('${car.docId}')" class="btn btn-danger" style="padding:4px 8px; font-size:0.75rem;" title="حذف"><i class="fa-solid fa-trash"></i></button>
             </td>
           </tr>
         `;
-        index++;
       });
+    }
 
-      if (fileHandle) await writeToLinkedFile();
-    });
+    async function closeAndArchiveDay() {
+      if (!confirm('هل أنت متأكد من إغلاق وتقفيل يومية اليوم؟\n\n- السيارات المكتملة (تم إصلاح الأعطال) ستتحول للأرشيف والتسليم النهائي.\n- السيارات المعلقة وغير المكتملة ستُرَحَّل أوتوماتيكياً وتأخذ أولوية أول أرقام دور لليوم التالي.')) {
+        return;
+      }
+
+      const todayStr = new Date().toLocaleDateString('ar-EG');
+      const tomorrowDate = new Date();
+      tomorrowDate.setDate(tomorrowDate.getDate() + 1);
+      const tomorrowStr = tomorrowDate.toLocaleDateString('ar-EG');
+
+      const uncompletedCars = allCarsCache.filter(c => c.status !== 'DONE');
+
+      try {
+        let index = 1;
+        for (let car of uncompletedCars) {
+          await db.collection('cars').doc(car.docId).update({
+            date: tomorrowStr,
+            queueNo: index++,
+            status: car.status === 'WAITING' ? 'WAITING' : 'HOLD',
+            shiftedFromDate: todayStr
+          });
+        }
+
+        alert('تم تقفيل اليومية بنجاح! السيارات المعلقة تم ترحيلها لتأخذ أسبقية الدور لليوم التالي.');
+      } catch (err) {
+        alert('حدث خطأ أثناء تقفيل اليومية: ' + err.message);
+      }
+    }
 
     async function deleteCar(docId) {
-      if (!docId) return;
-      if (confirm('هل أنت متأكد من حذف هذا العميل نهائياً من النظام؟')) {
+      if (confirm('هل أنت متأكد من حذف هذه السيارة نهائياً؟')) {
         try {
           await db.collection('cars').doc(docId).delete();
-          alert('تم حذف العميل بنجاح!');
-        } catch (err) { alert('حدث خطأ أثناء الحذف: ' + err.message); }
+          alert('تم الحذف بنجاح!');
+        } catch (err) { alert('حدث خطأ: ' + err.message); }
       }
+    }
+
+    function sendWhatsAppMsg(car) {
+      const textMessage = `مرحباً أ/ ${car.name}\nتم تسجيل سيارتكم (${car.brand} ${car.model}) بمركز أوتو نون (NON) بنجاح.\n\n🔑 السيريال نمبر المخصص لمتابعة حالة الفحص والصيانة: *${car.serialNo}*\n📌 رقم الدور الحالي: (#${car.queueNo})\n🚗 القسم المحول إليه: ${car.dept}\n🛠️ الخدمة المطلوبة: ${car.subDept || 'فحص وصيانة'}\n\nيمكنكم الاستعلام ومتابعة حالة الفحص والإصلاح بالمركز في أي وقت بواسطة السيريال نمبر الخاص بكم.\n\nشكراً لزيارتكم مركز أوتو نون!`;
+      const encodedMessage = encodeURIComponent(textMessage);
+      window.open(`https://wa.me/2${car.phone}?text=${encodedMessage}`, '_blank');
     }
 
     function generateCustomPDF() {
@@ -949,14 +1042,15 @@
       pdfTbody.innerHTML = '';
 
       allCarsCache.forEach(car => {
+        const st = STATUSES[car.status || 'WAITING'].label;
         pdfTbody.innerHTML += `
           <tr>
             <td style="text-align:center; font-weight:bold;">#${car.queueNo}</td>
-            <td><strong>${car.name}</strong><br><span style="color:#334155;">${car.phone}</span></td>
-            <td><strong>${car.brand || ''} ${car.model || ''}</strong><br>اللون: ${car.color || 'عام'}</td>
-            <td><strong>${car.plate}</strong><br>${car.gov}</td>
-            <td>شاسيه: ${car.chassis}<br>سيريال: ${car.serialNo || '-'}</td>
-            <td><strong>${car.dept} (${car.subDept || 'عام'})</strong><br>المشتملات: ${car.serviceDetails || '-'}<br><span style="color:#b91c1c;">العطل: ${car.issue || 'صيانة دورية'}</span></td>
+            <td><strong>${car.name}</strong><br>${car.phone}</td>
+            <td><strong>${car.brand || ''} ${car.model || ''}</strong><br>اللوحة: ${car.plate}</td>
+            <td>سيريال: ${car.serialNo}<br>شاسيه: ${car.chassis}</td>
+            <td><strong>${car.dept}</strong> (${car.subDept || 'عام'})</td>
+            <td><strong>${st}</strong><br><span style="color:#b91c1c;">العطل: ${car.issue || 'صيانة'}</span></td>
           </tr>
         `;
       });
@@ -966,7 +1060,7 @@
 
       const opt = {
         margin:       0.25,
-        filename:     `سجل_عملاء_NON_${new Date().toLocaleDateString('ar-EG').replace(/\//g, '-')}.pdf`,
+        filename:     `تقرير_مركز_نون_${new Date().toLocaleDateString('ar-EG').replace(/\//g, '-')}.pdf`,
         image:        { type: 'jpeg', quality: 1.0 },
         html2canvas:  { scale: 2, useCORS: true },
         jsPDF:        { unit: 'in', format: 'a4', orientation: 'landscape' }
@@ -977,34 +1071,17 @@
       });
     }
 
-    function exportSingleClientTXT(car) {
-      const content = createCarTxtBlock(car);
-      const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.download = `عميل_${car.name.replace(/\s+/g, '_')}.txt`;
-      link.click();
-    }
-
     function exportAllClientsTXT() {
-      if (allCarsCache.length === 0) { alert('لا توجد بيانات للعملاء للتصدير!'); return; }
-      let fullContent = "=== سجل عملاء مركز أوتو نون NON ===\n\n";
-      allCarsCache.forEach(car => { fullContent += createCarTxtBlock(car) + "\n\n------------------------------------------------\n\n"; });
+      if (allCarsCache.length === 0) { alert('لا توجد بيانات للتصدير!'); return; }
+      let fullContent = "=== سجل سيارات وصيانة مركز أوتو نون NON ===\n\n";
+      allCarsCache.forEach(car => {
+        fullContent += `الدور: #${car.queueNo}\nالتاريخ: ${car.date} - ${car.time}\nالاسم: ${car.name}\nالموبايل: ${car.phone}\nالسيارة: ${car.brand} ${car.model} - اللوحة: ${car.plate}\nالسيريال: ${car.serialNo}\nالقسم: ${car.dept} (${car.subDept})\nالحالة الحالية: ${STATUSES[car.status || 'WAITING'].label}\nالعطل: ${car.issue || 'لا يوجد'}\n\n------------------------------------------------\n\n`;
+      });
       const blob = new Blob([fullContent], { type: 'text/plain;charset=utf-8' });
       const link = document.createElement('a');
       link.href = URL.createObjectURL(blob);
-      link.download = `سجل_العملاء_${new Date().toLocaleDateString('ar-EG').replace(/\//g, '-')}.txt`;
+      link.download = `سجل_يومية_نون_${new Date().toLocaleDateString('ar-EG').replace(/\//g, '-')}.txt`;
       link.click();
-    }
-
-    function createCarTxtBlock(car) {
-      return `رقم الدور: #${car.queueNo}\nالتاريخ والوقت: ${car.date} - ${car.time}\nالاسم: ${car.name}\nالهاتف: ${car.phone}\nالسيارة: ${car.brand} ${car.model} (${car.color})\nاللوحة: ${car.plate} (${car.gov})\nرقم الشاسيه (VIN): ${car.chassis}\nالرقم التسلسلي (السيريال): ${car.serialNo}\nالقسم والخدمة: ${car.dept} - ${car.subDept}\nتفاصيل المشتملات: ${car.serviceDetails || 'لا يوجد'}\nالعطل/الشكوى: ${car.issue || 'لا يوجد'}`;
-    }
-
-    function sendWhatsAppMsg(car) {
-      const textMessage = `مرحباً أ/ ${car.name}\nتم تسجيل سيارتكم (${car.brand} ${car.model}) بمركز أوتو نون (NON) بنجاح.\n\n📌 رقم الدور الخاص بكم: (#${car.queueNo})\n🚗 القسم المحول إليه: ${car.dept}\n🛠️ الخدمة: ${car.subDept || 'صيانة عامة'}\n\nشكراً لزيارتكم مركزنا!`;
-      const encodedMessage = encodeURIComponent(textMessage);
-      window.open(`https://wa.me/2${car.phone}?text=${encodedMessage}`, '_blank');
     }
 
     function checkLogin() {
