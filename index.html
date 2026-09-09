@@ -138,7 +138,6 @@
     
     .badge-queue { background: var(--accent); color: white; padding: 4px 8px; border-radius: 6px; font-weight: bold; }
     
-    /* ألوان شارات الحالات */
     .status-badge { padding: 4px 8px; border-radius: 6px; font-weight: bold; font-size: 0.75rem; display: inline-block; }
     .status-waiting { background: #fef3c7; color: #92400e; }
     .status-diag { background: #e0f2fe; color: #0369a1; }
@@ -174,8 +173,10 @@
     #pdfPrintTemplate td { padding: 8px; border: 1px solid #cbd5e1; color: #000000 !important; font-size: 0.78rem; font-weight: 600; background: rgba(255,255,255,0.85); }
   </style>
 
+  <!-- Firebase SDKs (Compat v10) -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics-compat.js"></script>
 </head>
 <body>
 
@@ -245,7 +246,7 @@
       </h3>
 
       <form id="receptionForm">
-        <!-- البحث والاستعلام باللوحة (بدون يمين/شمال/أسهم) -->
+        <!-- البحث والاستعلام باللوحة -->
         <div class="form-group">
           <label>رقم اللوحة المعدنية:</label>
           <div class="plate-wrapper">
@@ -343,7 +344,7 @@
           </div>
         </div>
 
-        <!-- الشاسيه والسيريال (السيريال مولد افتراضياً) -->
+        <!-- الشاسيه والسيريال -->
         <div class="form-row">
           <div class="form-group">
             <label><i class="fa-solid fa-car"></i> رقم الشاسيه (VIN):</label>
@@ -486,11 +487,12 @@
       measurementId: "G-94YDPEKLJJ"
     };
 
+    // Initialize Firebase (Compat API)
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
+    const analytics = firebase.analytics();
 
     let allCarsCache = [];
-    let fileHandle = null;
     let html5QrScanner = null;
     let isCurrentPlateDuplicate = false;
 
@@ -580,7 +582,6 @@
       generateDefaultSerialNumber();
     }
 
-    // التوليد الافتراضي للسيريال نمبر
     function generateDefaultSerialNumber() {
       const randomSN = 'NON-' + Math.floor(100000 + Math.random() * 900000);
       document.getElementById('serialNo').value = randomSN;
@@ -610,6 +611,77 @@
           modelSelect.innerHTML += `<option value="${model}">${model}</option>`;
         });
       }
+    }
+
+    // دوال الاستيراد والتصدير لبيانات السيارات والماركات عبر Excel
+    function importCarDatabase(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const data = new Uint8Array(e.target.result);
+          const workbook = XLSX.read(data, { type: 'array' });
+          const firstSheetName = workbook.SheetNames[0];
+          const worksheet = workbook.Sheets[firstSheetName];
+          const jsonSheet = XLSX.utils.sheet_to_json(worksheet);
+
+          if (jsonSheet.length === 0) {
+            alert('ملف الـ Excel فارغ أو غير مدعوم!');
+            return;
+          }
+
+          let newDb = {};
+          jsonSheet.forEach(row => {
+            const origin = (row['المنشأ'] || row['Origin'] || '').toString().trim();
+            const brand = (row['الماركة'] || row['Brand'] || '').toString().trim();
+            const model = (row['الموديل'] || row['Model'] || '').toString().trim();
+
+            if (origin && brand) {
+              if (!newDb[origin]) newDb[origin] = {};
+              if (!newDb[origin][brand]) newDb[origin][brand] = [];
+              if (model && !newDb[origin][brand].includes(model)) {
+                newDb[origin][brand].push(model);
+              }
+            }
+          });
+
+          if (Object.keys(newDb).length > 0) {
+            carDatabase = newDb;
+            localStorage.setItem('autonon_car_db', JSON.stringify(carDatabase));
+            initOrigins();
+            alert('تم استيراد قاعدة بيانات الماركات والموديلات وتحديث النظام بنجاح!');
+          } else {
+            alert('لم يتم العثور على أعمدة مطابقة (المنشأ، الماركة، الموديل) في ملف الـ Excel.');
+          }
+        } catch (err) {
+          alert('حدث خطأ أثناء قراءة ملف الـ Excel: ' + err.message);
+        }
+      };
+      reader.readAsArrayBuffer(file);
+      event.target.value = ''; // لإتاحة إعادة استيراد نفس الملف إن أُمِر
+    }
+
+    function exportCarDatabase() {
+      let flatData = [];
+      for (let origin in carDatabase) {
+        for (let brand in carDatabase[origin]) {
+          carDatabase[origin][brand].forEach(model => {
+            flatData.push({ 'المنشأ': origin, 'الماركة': brand, 'الموديل': model });
+          });
+        }
+      }
+
+      if (flatData.length === 0) {
+        alert('لا توجد بيانات ماركات للتصدير!');
+        return;
+      }
+
+      const worksheet = XLSX.utils.json_to_sheet(flatData);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "CarBrands");
+      XLSX.writeFile(workbook, "AutoNon_Car_Brands.xlsx");
     }
 
     function handleColorChange() {
@@ -773,7 +845,6 @@
       const plateKey = `${pCharsClean}-${pNumsClean}`;
 
       if (p1 && pNumsClean.length >= 1) {
-        // منع التكرار ومنع التسجيل للسيارات الحالية بالورشة وقائمة الانتظار (أي حالة غير DONE)
         const activeDuplicate = allCarsCache.find(c => c.status !== 'DONE' && (c.plate || '').replace(/\s+/g, '') === plateKey);
         
         if (activeDuplicate) {
@@ -788,11 +859,10 @@
           dangerNotice.style.display = 'none';
         }
 
-        // استدعاء البيانات تلقائياً إذا كانت السيارة مسجلة مسبقاً وتَمَّ تسليمها بأوقات سابقة
         const pastCar = allCarsCache.slice().reverse().find(c => (c.plate || '').replace(/\s+/g, '') === plateKey);
         if (pastCar) {
           fillFormWithCarData(pastCar);
-          generateDefaultSerialNumber(); // استبدال السيريال بسيريال جديد لدورة الصيانة الجديدة
+          generateDefaultSerialNumber();
           notice.innerHTML = `
             <div><i class="fa-solid fa-circle-check"></i> <strong>سيارة مسجلة سابقاً في النظام</strong></div>
             <div style="font-size:0.8rem; margin-top:2px;">تم استدعاء بيانات العميل: <b>${pastCar.name}</b> وتوليد سيريال صيانة جديد.</div>
@@ -989,7 +1059,7 @@
     }
 
     async function closeAndArchiveDay() {
-      if (!confirm('هل أنت متأكد من إغلاق وتقفيل يومية اليوم؟\n\n- السيارات المكتملة (تم إصلاح الأعطال) ستتحول للأرشيف والتسليم النهائي.\n- السيارات المعلقة وغير المكتملة ستُرَحَّل أوتوماتيكياً وتأخذ أولوية أول أرقام دور لليوم التالي.')) {
+      if (!confirm('هل أنت متأكد من إغلاق وتقفيل يومية اليوم؟\n\n- السيارات المكتملة (تم إصلاح الأعطال) ستتحول للأرشيف والتسليم النهائي.\n- السيارات المعلقة وغير المكتملة ستُرَحَّل أوتوماتيكياً وتأخذ أولوية أول أرقام دور للغد.')) {
         return;
       }
 
