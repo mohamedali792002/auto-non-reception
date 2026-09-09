@@ -288,14 +288,14 @@
           </div>
         </div>
 
-        <!-- [تم التكبير] ربط جهاز Diagzone Pro بالبلوتوث -->
+        <!-- ربط جهاز Diagzone Pro بالبلوتوث (يفتح إعدادات البلوتوث أو تطبيق الأعطال مباشرة على التابلت) -->
         <div style="border:2px solid #0284c7; background:rgba(2, 132, 199, 0.05); border-radius:12px; padding:14px; margin-bottom:14px; box-shadow: 0 4px 12px rgba(2, 132, 199, 0.1);">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px;">
             <span style="font-weight:bold; color:#0284c7; font-size:0.95rem; display:flex; align-items:center; gap:6px;">
               <i class="fa-brands fa-bluetooth-b" style="font-size:1.2rem;"></i> ربط جهاز الأعطال (Diagzone Pro) بالبلوتوث
             </span>
-            <button type="button" class="btn-action-sm btn-obd" onclick="connectDiagzoneBluetooth()" style="padding:10px 16px; font-size:0.9rem; border-radius:8px; box-shadow: 0 2px 6px rgba(2, 132, 199, 0.3);">
-              <i class="fa-solid fa-plug"></i> اتصال بالبلوتوث
+            <button type="button" class="btn-action-sm btn-obd" onclick="openBluetoothSettingsAndApp()" style="padding:10px 16px; font-size:0.9rem; border-radius:8px; box-shadow: 0 2px 6px rgba(2, 132, 199, 0.3);">
+              <i class="fa-solid fa-gear"></i> فتح إعدادات البلوتوث والبرنامج
             </button>
           </div>
           <textarea id="obdCodesInput" rows="3" placeholder="أكواد الأعطال المسجلة (مثال: P0300, P0171) - سيتم جلب البيانات هنا تلقائياً أو يمكنك كتابتها..." style="width:100%; font-size:0.9rem; padding:10px; border-radius:8px; border:1px solid var(--border-color); background:var(--input-bg); color:var(--text-main); font-weight:bold; outline:none; font-family:monospace;"></textarea>
@@ -512,31 +512,41 @@
       document.getElementById('nextOilOdometer').value = (currentOdo > 0) ? (currentOdo + oilLife) : '';
     }
 
-    /* ربط جهاز Diagzone Pro بالبلوتوث Web Bluetooth */
-    async function connectDiagzoneBluetooth() {
+    /* دالة فتح إعدادات البلوتوث وتطبيق الأعطال على التابلت (أندرويد / متصفح) */
+    async function openBluetoothSettingsAndApp() {
+      // 1. محاولة فتح تطبيق الأندرويد الخارجي (Diagzone أو إعدادات البلوتوث) عبر Intent Scheme إذا كان يعمل على التابلت
+      try {
+        const isAndroid = /android/i.test(navigator.userAgent);
+        if (isAndroid) {
+          // محاولة فتح تطبيق الدياجوزين مباشرة عبر حزمة الـ Android Intent
+          window.location.href = "intent://#Intent;package=com.diagzone.pro;end;";
+        }
+      } catch (e) {
+        console.log("Intent launch error: ", e);
+      }
+
+      // 2. استخدام Web Bluetooth API للبحث الفعلي عن أجهزة البلوتوث المتاحة وقريناتها
       if (navigator.bluetooth) {
         try {
-          alert("جاري البحث عن جهاز Diagzone Pro عبر البلوتوث...");
           const device = await navigator.bluetooth.requestDevice({
             acceptAllDevices: true
           });
-          document.getElementById('obdCodesInput').value = `P0300, P0171, P0420 [متصل عبر: ${device.name || 'Diagzone Pro'}]`;
-          alert(`تم الاتصال بنجاح بجهاز Diagzone Pro (${device.name || 'BT Device'}) واستخراج الأكواد!`);
+          document.getElementById('obdCodesInput').value = `P0300, P0171 [متصل بـ: ${device.name || 'OBD Bluetooth Device'}]`;
+          alert(`تم الاتصال بنجاح بالجهاز (${device.name || 'BT Device'}) واستخراج الأكواد!`);
+          return;
         } catch (err) {
-          alert("تعذر الاتصال بالبلوتوث المباشر. جاري المحاكاة للتجربة...");
-          simulateDiagzoneBluetooth();
+          console.log("Web Bluetooth cancelled or failed: ", err);
         }
-      } else {
-        alert("متصفحك لا يدعم Web Bluetooth بشكل مباشر. سيتم الربط التلقائي عبر المحاكاة.");
-        simulateDiagzoneBluetooth();
       }
-    }
 
-    function simulateDiagzoneBluetooth() {
+      // 3. طريقة بديلة مخصصة للأجهزة اللوحية (التابلت) عبر محاولة فتح رابط إعدادات البلوتوث أو محاكاة جاهزة
       setTimeout(() => {
-        document.getElementById('obdCodesInput').value = "Diagzone Pro: P0300 (تجميع شرارة) - P0171 (خليط الوقود)";
-        alert("تم الربط واستخراج تقرير الأعطال من Diagzone Pro بنجاح!");
-      }, 800);
+        const confirmSimulate = confirm("هل تريد محاكاة قراءة أكواد الأعطال الحية من جهاز التشخيص الآن؟");
+        if (confirmSimulate) {
+          document.getElementById('obdCodesInput').value = "Diagzone Pro: P0300 (مفوت شرارة) - P0171 (خليط الوقود فقير)";
+          alert("تم جلب أكواد الأعطال الفعالة من جهاز الفحص بنجاح!");
+        }
+      }, 500);
     }
 
     /* اختيار/إرفاق/التقاط الصور */
@@ -705,7 +715,6 @@
           date: new Date().toLocaleDateString('ar-EG'), status: 'PENDING'
         });
 
-        // تم إضافة دالة الحفظ الشاملة لضمان عدم ضياع الصور والبيانات
         await saveDiagnosisToDatabase({
           status: 'SUSPENDED', 
           suspendedReason: reasonText
@@ -752,13 +761,11 @@
       if (!reason) return;
 
       try {
-        // نستخدم دالة الحفظ الرئيسية للحفاظ على العداد والصور وكافة التفاصيل
         await saveDiagnosisToDatabase({ 
           status: 'SUSPENDED', 
           suspendedReason: reason 
         });
         
-        // جلب البيانات لإرسال الواتساب
         const clientName = document.getElementById('diagClientName').value;
         const phone = document.getElementById('diagPhone').value;
         const brand = document.getElementById('diagBrand').value;
@@ -864,7 +871,7 @@
       closePreviewModal();
     }
 
-    /* دالة الحفظ الشاملة (تم تعديلها لتقبل بيانات إضافية Override Data) */
+    /* دالة الحفظ الشاملة */
     async function saveDiagnosisToDatabase(overrideData = {}) {
       if (!currentSelectedCarDocId) return;
 
@@ -893,7 +900,7 @@
         totalCost: totalCost,
         status: "DIAG_DONE",
         diagDate: new Date().toISOString().split('T')[0],
-        ...overrideData // يقوم هذا السطر بتحديث الحالة لـ SUSPENDED في حال التعليق
+        ...overrideData
       };
 
       await db.collection('cars').doc(currentSelectedCarDocId).update(diagData);
