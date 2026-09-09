@@ -40,7 +40,6 @@
       font-size: 0.9rem;
     }
 
-    /* الهيدر المتجاوب */
     .header-top-bar {
       display: flex;
       justify-content: space-between;
@@ -78,7 +77,6 @@
       padding: 7px 12px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 0.8rem;
     }
 
-    /* شريط البحث والفلترة */
     .top-search-card {
       background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px;
       padding: 10px 14px; margin-bottom: 14px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
@@ -89,7 +87,6 @@
       background: var(--input-bg); color: var(--text-main); font-size: 0.85rem; outline: none;
     }
 
-    /* تقسيم الشبكة الأساسية */
     .main-layout { display: grid; grid-template-columns: 520px 1fr; gap: 14px; }
     @media (max-width: 1100px) { .main-layout { grid-template-columns: 1fr; } }
 
@@ -115,7 +112,6 @@
       border-radius: 6px; font-size: 0.83rem; color: var(--text-main); outline: none; text-align: right;
     }
 
-    /* معارض الصور المرفقة والملتقطة */
     .image-upload-container {
       display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; margin-top: 8px;
     }
@@ -125,7 +121,6 @@
     .image-preview-card img { width: 100%; height: 75px; object-fit: cover; display: block; }
     .image-preview-card input { font-size: 0.7rem; padding: 4px; border: none; border-top: 1px solid var(--border-color); width: 100%; text-align: right; }
 
-    /* التنبيه للسيارات المعلقة */
     @keyframes pulse-red {
       0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.6); }
       70% { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
@@ -133,7 +128,6 @@
     }
     .suspended-alert { animation: pulse-red 2s infinite; border: 2px solid #ef4444 !important; }
 
-    /* الجداول */
     table { width: 100%; border-collapse: collapse; margin-top: 6px; font-size: 0.8rem; direction: rtl; text-align: right; }
     th { background: rgba(234, 88, 12, 0.12); color: var(--primary-orange); padding: 8px; text-align: right; font-weight: bold; }
     td { padding: 8px; border-bottom: 1px solid var(--border-color); vertical-align: middle; text-align: right; }
@@ -151,7 +145,6 @@
     .btn-hold { background: #f59e0b; color: white; }
     .btn-disabled { opacity: 0.5; cursor: not-allowed; }
 
-    /* النوافذ المنبثقة Modal */
     .modal-overlay {
       position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6);
       display: none; justify-content: center; align-items: center; z-index: 9999; padding: 10px;
@@ -167,7 +160,6 @@
 </head>
 <body>
 
-  <!-- الهيدر العلوي -->
   <div class="header-top-bar">
     <div class="brand-logo">
       <i class="fa-solid fa-car-tunnel"></i>
@@ -187,7 +179,6 @@
     </div>
   </div>
 
-  <!-- البحث والفلترة -->
   <div class="top-search-card">
     <i class="fa-solid fa-magnifying-glass" style="color:var(--primary-orange); font-size:1.1rem;"></i>
     <input type="text" id="topSearchInput" placeholder="ابحث بالاسم، الهاتف، السيريال، أو رقم اللوحة..." oninput="handleInstantSearch()" style="flex:1; min-width:180px;">
@@ -204,7 +195,6 @@
 
   <div class="main-layout">
     
-    <!-- العمود الأيمن: البيانات والتشخيص والاتصال بأجهزة الفحص -->
     <div>
       <div class="card-box">
         <div class="card-title">
@@ -212,7 +202,6 @@
           <span id="serialStatusBadge" class="badge-status" style="background:#64748b; color:white;">السيريال غير مفعل</span>
         </div>
 
-        <!-- تفعيل السيريال -->
         <div style="background:rgba(234, 88, 12, 0.05); border:1px dashed var(--primary-orange); border-radius:8px; padding:8px; margin-bottom:10px;">
           <label style="font-size: 0.78rem; font-weight: bold; color: var(--primary-orange);">ربط وتفعيل سيريال السيارة:</label>
           <div style="display:flex; gap:6px; margin-top:4px;">
@@ -221,7 +210,6 @@
           </div>
         </div>
 
-        <!-- بيانات السيارة الأساسية -->
         <div style="border:1px solid var(--border-color); border-radius:8px; padding:8px; margin-bottom:10px;">
           <div class="form-grid">
             <div class="form-field">
@@ -257,7 +245,6 @@
           </div>
         </div>
 
-        <!-- العداد وتغيير الزيت -->
         <div style="border:1px solid var(--primary-orange); background:rgba(234, 88, 12, 0.02); border-radius:8px; padding:8px; margin-bottom:10px;">
           <div style="font-weight:bold; color:var(--primary-orange); font-size:0.8rem; margin-bottom:6px;">
             <i class="fa-solid fa-oil-can"></i> بيانات العداد والزيت:
@@ -288,7 +275,6 @@
           </div>
         </div>
 
-        <!-- ربط جهاز Diagzone Pro بالبلوتوث وتطبيقات التابلت -->
         <div style="border:2px solid #0284c7; background:rgba(2, 132, 199, 0.05); border-radius:12px; padding:14px; margin-bottom:14px; box-shadow: 0 4px 12px rgba(2, 132, 199, 0.1);">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px;">
             <span style="font-weight:bold; color:#0284c7; font-size:0.95rem; display:flex; align-items:center; gap:6px;">
@@ -301,13 +287,11 @@
           <textarea id="obdCodesInput" rows="3" placeholder="أكواد الأعطال المسجلة (مثال: P0300, P0171) - سيتم جلب البيانات هنا تلقائياً أو يمكنك كتابتها..." style="width:100%; font-size:0.9rem; padding:10px; border-radius:8px; border:1px solid var(--border-color); background:var(--input-bg); color:var(--text-main); font-weight:bold; outline:none; font-family:monospace;"></textarea>
         </div>
 
-        <!-- تقرير التشخيص -->
         <div class="form-field" style="margin-bottom:8px;">
           <label style="color:var(--primary-orange); font-size:0.8rem;"><i class="fa-solid fa-user-gear"></i> تقرير التشخيص والفحص الفني:</label>
           <textarea id="diagIssueText" rows="2" placeholder="اكتب وصف الفحص الفني والنتائج..."></textarea>
         </div>
 
-        <!-- التقاط وإرفاق الصور بشكل منفصل -->
         <div style="border:1px solid var(--border-color); border-radius:8px; padding:8px; margin-bottom:10px;">
           <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
             <label style="font-size:0.78rem; font-weight:bold;"><i class="fa-solid fa-camera"></i> صور الفحص الفني والعيوب:</label>
@@ -327,7 +311,6 @@
           <div class="image-upload-container" id="uploadedImagesContainer"></div>
         </div>
 
-        <!-- المخزن وبند الإضافة المؤقت -->
         <div style="border:1px solid var(--border-color); border-radius:8px; padding:8px; margin-bottom:10px;">
           <div style="display:flex; gap:6px; margin-bottom:6px; flex-wrap:wrap;">
             <button type="button" class="btn-action-sm btn-primary" style="flex:1;" onclick="openStorePartsModal()"><i class="fa-solid fa-boxes-stacked"></i> اختيار قطعة من المخزن</button>
@@ -348,7 +331,6 @@
           </div>
         </div>
 
-        <!-- زر DZ لإرفاق ملف PDF -->
         <div style="border:1px solid var(--btn-dz); background:rgba(139, 92, 246, 0.03); border-radius:8px; padding:8px; margin-bottom:10px;">
           <div style="display:flex; gap:6px; align-items:center;">
             <input type="file" id="dzPdfInput" accept="application/pdf" style="display:none;" onchange="handleDzPdfSelected(event)">
@@ -360,9 +342,12 @@
         </div>
 
         <div style="display:flex; flex-direction:column; gap:6px;">
-          <!-- زر جديد ومباشر لإرسال الفحص بالمرفقات والبيانات والاتصال بالواتساب فوراً -->
           <button type="button" class="btn-action-sm btn-whatsapp" style="padding:11px; justify-content:center; font-size:0.95rem; font-weight:bold;" onclick="sendDirectReportWithAttachmentsWhatsApp()">
-            <i class="fa-brands fa-whatsapp" style="font-size:1.1rem;"></i> إرسال تفاصيل الفحص والمرفقات بالواتساب للعميل
+            <i class="fa-brands fa-whatsapp" style="font-size:1.1rem;"></i> إرسال تفاصيل الفحص والمرفقات بالواتساب للعميل (مع بقاء السيارة معلقة)
+          </button>
+
+          <button type="button" class="btn-action-sm" style="background:#10b981; color:white; padding:10px; justify-content:center; font-size:0.9rem;" onclick="finishDiagnosisAndTransferToDepartment()">
+            <i class="fa-solid fa-circle-check"></i> إنهاء التشخيص وتحويل السيارة للقسم المختص
           </button>
 
           <button type="button" id="btnHoldCar" class="btn-action-sm btn-hold" style="padding:9px; justify-content:center; font-size:0.85rem;" onclick="markCarAsSuspended()"><i class="fa-solid fa-pause-circle"></i> تحويل السيارة إلى معلقة (مع حفظ الصور والوصف كـ PDF وتنبيه العميل)</button>
@@ -373,10 +358,8 @@
       </div>
     </div>
 
-    <!-- العمود الأيسر: القوائم والسجلات -->
     <div>
 
-      <!-- قائمة السيارات المعلقة -->
       <div class="card-box suspended-alert">
         <div class="card-title" style="color:#ef4444;">
           <span><i class="fa-solid fa-triangle-exclamation"></i> السيارات المعلقة (في انتظار قطع الغيار)</span>
@@ -400,7 +383,6 @@
         </div>
       </div>
 
-      <!-- المنتظرة -->
       <div class="card-box">
         <div class="card-title">
           <span><i class="fa-solid fa-car-side"></i> السيارات المنتظرة للتشخيص</span>
@@ -423,7 +405,6 @@
         </div>
       </div>
 
-      <!-- السجلات -->
       <div class="card-box">
         <div class="card-title">
           <span><i class="fa-solid fa-file-invoice"></i> سجّلات التشخيص والتقارير المكتملة</span>
@@ -452,13 +433,12 @@
 
   </div>
 
-  <!-- النافذة المنبثقة لمعاينة التقرير والصور قبل الإرسال أو حفظ PDF -->
   <div class="modal-overlay" id="previewModal">
     <div class="modal-content">
       <div id="pdfExportContainer">
         <div style="text-align:center; border-bottom:2px solid var(--primary-orange); padding-bottom:8px; margin-bottom:12px;">
           <h3 style="color:var(--primary-orange); font-size:1.2rem;"><i class="fa-solid fa-car-tunnel"></i> مركز أوتو نون (NON) لصيانة السيارات</h3>
-          <p style="font-size:0.8rem; color:#64748b;">تقرير الفحص الفني الشامل والتشخيص مع المرفقات</p>
+          <p style="font-size:0.8rem; color:#64748b;">تقرير الفحص الفني الشامل والتشخيص مع والمرفقات</p>
         </div>
 
         <div id="previewDetailsContent"></div>
@@ -515,12 +495,10 @@
       document.getElementById('nextOilOdometer').value = (currentOdo > 0) ? (currentOdo + oilLife) : '';
     }
 
-    /* دالة فتح برامج فحص الأعطال المثبتة على التابلت أو إعدادات البلوتوث */
     async function openBluetoothSettingsAndApp() {
       try {
         const isAndroid = /android/i.test(navigator.userAgent);
         if (isAndroid) {
-          // فتح نافذة اختيار التطبيقات بالأندرويد أو إعدادات البلوتوث
           window.location.href = "intent://#Intent;action=android.settings.BLUETOOTH_SETTINGS;end;";
           return;
         }
@@ -550,7 +528,6 @@
       }
     }
 
-    /* اختيار/إرفاق/التقاط الصور مع الوصف */
     function handleImageSelected(event) {
       const files = event.target.files;
       if (!files || files.length === 0) return;
@@ -594,7 +571,6 @@
       }
     }
 
-    /* قاعدة البيانات المباشرة */
     db.collection('cars').orderBy('createdAt', 'asc').onSnapshot(snapshot => {
       allCarsLocalData = [];
       const waitingTbody = document.getElementById('waitingCarsTbody');
@@ -754,7 +730,6 @@
       return total;
     }
 
-    /* تحويل السيارة المعلقة (تحفظ الصور مع الوصف وتراسل العميل وتولد الملفات) */
     async function markCarAsSuspended() {
       if (!currentSelectedCarDocId) { alert("اختر سيارة أولاً!"); return; }
       const reason = prompt("سبب تحويل السيارة للمعلّق:", "في انتظار توفير قطع الغيار");
@@ -771,17 +746,21 @@
         const brand = document.getElementById('diagBrand').value;
         const model = document.getElementById('diagModel').value;
         
-        const msg = `مرحباً أ/ ${clientName}،\nنود إعلامكم بأنه تم تعليق العمل على سيارتكم (${brand} ${model}) مؤقتاً لحين استكمال الفحص وتوفير قطع الغيار اللازمة.\nالسبب: ${reason}\n\nعدد الصور والمرفقات المحفوظة بالتقرير: ${capturedImagesArr.length}\nشكراً لتفهمكم - مركز أوتو نون (NON)`;
+        const reportUrl = `https://my-username.github.io/auto-non-repo/report.html?id=${currentSelectedCarDocId}`;
+        const msg = `مرحباً أ/ ${clientName}،\nنود إعلامكم بأنه تم تعليق العمل على سيارتكم (${brand} ${model}) مؤقتاً لحين استكمال الفحص وتوفير قطع الغيار اللازمة.\nالسبب: ${reason}\n\nيمكنك متابعة تفاصيل تقرير الفحص والمرفقات عبر الرابط التالي:\n${reportUrl}\n\nشكراً لتفهمكم - مركز أوتو نون (NON)`;
         
         window.open(`https://wa.me/2${phone}?text=${encodeURIComponent(msg)}`, '_blank');
-        alert("تم حفظ بيانات السيارة والصور مع الوصف، وتحويلها لقائمة المعلق، وتنبيه العميل بنجاح!");
+        alert("تم حفظ بيانات السيارة والصور مع الوصف، وتحويلها لقائمة المعلق، وتنبيه العميل بالرابط بنجاح!");
       } catch (err) { alert("خطأ: " + err.message); }
     }
 
-    /* زر مباشر تحت قسم الفحص لإرسال البيانات والمرفقات واتساب للعميل */
     async function sendDirectReportWithAttachmentsWhatsApp() {
       if (!currentSelectedCarDocId) { alert("يرجى اختيار سيارة من القائمة أولاً!"); return; }
-      await saveDiagnosisToDatabase();
+      
+      await saveDiagnosisToDatabase({
+        status: 'SUSPENDED',
+        suspendedReason: 'في انتظار اكتمال التشخيص والمرفقات النهائية'
+      });
 
       const phone = document.getElementById('diagPhone').value;
       const clientName = document.getElementById('diagClientName').value;
@@ -793,18 +772,32 @@
       const totalCost = calculateTotalCost();
 
       let imgDescSummary = capturedImagesArr.length > 0 
-        ? `\n\n📸 *ملاحظات صور الفحص (${capturedImagesArr.length}):*\n` + capturedImagesArr.map((img, i) => `صورة ${i+1}: ${img.description || 'بدون وصف'}`).join('\n') 
+        ? `\n\n📸 *صور الفحص الفني والعيوب (${capturedImagesArr.length}):*\n` + capturedImagesArr.map((img, i) => `صورة ${i+1}: ${img.description || 'بدون وصف'}`).join('\n') 
         : '';
       
       let pdfNote = attachedDzPdfFile ? `\n📄 تقرير التشخيص الإلكتروني المرفق: ${attachedDzPdfFile.name}` : '';
 
-      const msg = `تقرير الفحص الفني - مركز أوتو نون (NON)\n-----------------------------------\nأهلاً بك أ/ ${clientName}\nسيارتك: ${brand} ${model}\n\n📝 نتيجة الفحص: ${diagText}\n💻 أكواد الأعطال (OBD): ${obd || 'لا يوجد'}\n🛢️ تغيير الزيت القادم: *${nextOilOdo} كم*${imgDescSummary}${pdfNote}\n\n💰 التكلفة الإجمالية: *${totalCost} ج.م*\n\nنتمنى لك دائم السلامة!`;
+      const reportUrl = `https://my-username.github.io/auto-non-repo/report.html?id=${currentSelectedCarDocId}`;
+
+      const msg = `تقرير الفحص الفني (معلق) - مركز أوتو نون (NON)\n-----------------------------------\nأهلاً بك أ/ ${clientName}\nسيارتك: ${brand} ${model}\n\n📝 نتيجة الفحص: ${diagText}\n💻 أكواد الأعطال (OBD): ${obd || 'لا يوجد'}\n🛢️ تغيير الزيت القادم: *${nextOilOdo} كم*${imgDescSummary}${pdfNote}\n\n💰 التكلفة التقديرية: *${totalCost} ج.م*\n\n🔗 *رابط تقرير الفحص والمرفقات الكامل:* \n${reportUrl}\n\nالسيارة ما زالت قيد المتابعة المعلقة لحين الإنهاء والتسليم.`;
 
       window.open(`https://wa.me/2${phone}?text=${encodeURIComponent(msg)}`, '_blank');
-      alert("تم إرسال تفاصيل الفحص والمرفقات والرسومات مع الوصف عبر الواتساب للعميل بنجاح!");
+      alert("تم إرسال تقرير الفحص والعيوب مع رابط التقرير والمرفقات بالواتساب بنجاح!");
     }
 
-    /* معاينة التقرير والصور مع الوصف قبل الإرسال أو حفظ PDF */
+    async function finishDiagnosisAndTransferToDepartment() {
+      if (!currentSelectedCarDocId) { alert("يرجى اختيار سيارة أولاً!"); return; }
+      
+      try {
+        await saveDiagnosisToDatabase({
+          status: 'DIAG_DONE'
+        });
+        alert("تم إنهاء التشخيص بنجاح، وتم نقل وتحويل السيارة إلى القسم المختص!");
+      } catch (err) {
+        alert("خطأ أثناء الإنهاء: " + err.message);
+      }
+    }
+
     function openPreviewModal() {
       if (!currentSelectedCarDocId) return;
 
@@ -910,7 +903,7 @@
         ...overrideData
       };
 
-      await db.collection('cars').doc(currentSelectedCarDocId).update(diagData);
+      await db.collection('cars').doc(currentSelectedCarDocId).set(diagData, { merge: true });
     }
 
     function handleInstantSearch() { renderMonthlyRemindersAndSearch(); }
