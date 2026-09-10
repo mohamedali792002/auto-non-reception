@@ -746,7 +746,7 @@
         const brand = document.getElementById('diagBrand').value;
         const model = document.getElementById('diagModel').value;
         
-        const reportUrl = `https://my-username.github.io/auto-non-repo/report.html?id=${currentSelectedCarDocId}`;
+        const reportUrl = `https://mohamedali792002.github.io/auto-non-repo/report.html?id=${currentSelectedCarDocId}`;
         const msg = `مرحباً أ/ ${clientName}،\nنود إعلامكم بأنه تم تعليق العمل على سيارتكم (${brand} ${model}) مؤقتاً لحين استكمال الفحص وتوفير قطع الغيار اللازمة.\nالسبب: ${reason}\n\nيمكنك متابعة تفاصيل تقرير الفحص والمرفقات عبر الرابط التالي:\n${reportUrl}\n\nشكراً لتفهمكم - مركز أوتو نون (NON)`;
         
         window.open(`https://wa.me/2${phone}?text=${encodeURIComponent(msg)}`, '_blank');
@@ -777,7 +777,7 @@
       
       let pdfNote = attachedDzPdfFile ? `\n📄 تقرير التشخيص الإلكتروني المرفق: ${attachedDzPdfFile.name}` : '';
 
-      const reportUrl = `https://my-username.github.io/auto-non-repo/report.html?id=${currentSelectedCarDocId}`;
+      const reportUrl = `https://mohamedali792002.github.io/auto-non-repo/report.html?id=${currentSelectedCarDocId}`;
 
       const msg = `تقرير الفحص الفني (معلق) - مركز أوتو نون (NON)\n-----------------------------------\nأهلاً بك أ/ ${clientName}\nسيارتك: ${brand} ${model}\n\n📝 نتيجة الفحص: ${diagText}\n💻 أكواد الأعطال (OBD): ${obd || 'لا يوجد'}\n🛢️ تغيير الزيت القادم: *${nextOilOdo} كم*${imgDescSummary}${pdfNote}\n\n💰 التكلفة التقديرية: *${totalCost} ج.م*\n\n🔗 *رابط تقرير الفحص والمرفقات الكامل:* \n${reportUrl}\n\nالسيارة ما زالت قيد المتابعة المعلقة لحين الإنهاء والتسليم.`;
 
