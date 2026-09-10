@@ -173,6 +173,14 @@
         <div class="image-grid" id="imagesContainer"></div>
       </div>
 
+      <!-- قسم المستندات والمرفقات الإضافية -->
+      <div class="section">
+        <b style="color:var(--primary);"><i class="fa-solid fa-file-lines"></i> المستندات والمرفقات:</b>
+        <div id="attachmentsContainer" style="margin-top: 8px;">
+            <p style="color:#64748b; font-size:0.85rem;">لا توجد مستندات إضافية مرفقة.</p>
+        </div>
+      </div>
+
       <button class="btn" style="background:#0284c7;" onclick="window.print()"><i class="fa-solid fa-file-arrow-down"></i> تحميل التقرير كملف PDF</button>
       
       <a id="whatsappBtn" href="#" target="_blank" class="btn" style="background:#25d366; display:none;">
@@ -231,6 +239,7 @@
           document.getElementById('obdCodes').textContent = car.obdCodes || 'لا توجد أكواد مسجلة';
           document.getElementById('diagText').textContent = car.diagnosisDetails || 'لا توجد ملاحظات فنية.';
 
+          // عرض الصور
           const imgContainer = document.getElementById('imagesContainer');
           if (car.images && car.images.length > 0) {
             imgContainer.innerHTML = car.images.map(img => `
@@ -243,9 +252,19 @@
             imgContainer.innerHTML = '<p style="color:#64748b; font-size:0.85rem;">لا توجد صور مرفقة لهذا التقرير.</p>';
           }
 
-          // ضبط رابط جيت هب الصحيح للتقرير الموجه للواتساب
+          // عرض المستندات والمرفقات الإضافية إن وجدت
+          const attachmentsContainer = document.getElementById('attachmentsContainer');
+          if (car.attachments && car.attachments.length > 0) {
+              attachmentsContainer.innerHTML = car.attachments.map(file => `
+                  <a href="${file.url}" target="_blank" class="ctrl-btn" style="display:inline-block; margin: 4px;">
+                      <i class="fa-solid fa-paperclip"></i> ${file.name || 'مستند مرفق'}
+                  </a>
+              `).join('');
+          }
+
+          // ضبط رابط جيت هب الصحيح للتقرير الموجه للواتساب (محدث بناءً على مسار مستودعك auto-non-reception)
           const githubReportUrl = `https://mohamedali792002.github.io/auto-non-reception/report.html?id=${carId}`;
-          const message = `عزيزي العميل / 🚗\nإليك تقرير الفحص الفني الخاص بسيارتك من مركز أوتو نون:\n\n🔗 ${githubReportUrl}\n\nنسعد دائمًا بخدمتكم! 🛠️`;
+          const message = `عزيزي العميل / 🚗\nإليك تقرير الفحص الفني والمستندات الخاصة بسيارتك من مركز أوتو نون:\n\n🔗 ${githubReportUrl}\n\nنسعد دائمًا بخدمتكم! 🛠️`;
           
           const whatsappBtn = document.getElementById('whatsappBtn');
           whatsappBtn.href = `https://wa.me/?text=${encodeURIComponent(message)}`;
